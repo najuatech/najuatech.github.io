@@ -42,18 +42,41 @@
       align-items: center;
       gap: 20px;
     }
-    .logo { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
-    .logo span { color: var(--cyan); }
-    .navlinks { display: flex; align-items: center; gap: 22px; }
-    .navlinks a { color: var(--muted); font-size: 14px; }
-    .navlinks a:hover { color: var(--cyan); }
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 100px 0 85px;
-      background:
-        radial-gradient(ellipse at 80% 25%, #163c68 0%, transparent 45%),
-        radial-gradient(ellipse at 10% 90%, #102b42 0%, transparent 40%);
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      font-size: 43px;
+      font-weight: 900;
+      font-style: italic;
+      line-height: 1;
+      background: linear-gradient(135deg, #ffffff, #7c91ad 48%, #08d9ff 70%, #1766ff);
+      color: transparent;
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .logo-name {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+    }
+
+    .logo-main {
+      color: #e4e9f1;
+      letter-spacing: 1px;
+    }
+
+    .logo-tech {
+      color: #19d9ff;
+      font-size: 13px;
+      letter-spacing: 5px;
     }
     .eyebrow {
       color: var(--cyan);
