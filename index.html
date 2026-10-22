@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d1a">
+  <meta name="description" content="Najua Tech is a technology competition and developer community empowering young innovators in Tanzania.">
+  <title>Najua Tech | The Future Is Built Here</title>
+  <style>
+    :root {
+      --bg: #080d1a;
+      --panel: #101a2d;
+      --blue: #48a7ff;
+      --cyan: #56f0e0;
+      --white: #f5f8ff;
+      --muted: #a7b4ca;
+      --line: #24334b;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 85px; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1100px, 90%); margin: auto; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(8,13,26,.96);
+      border-bottom: 1px solid var(--line);
+    }
+    nav {
+      min-height: 76px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
+    .logo span { color: var(--cyan); }
+    .navlinks { display: flex; align-items: center; gap: 22px; }
+    .navlinks a { color: var(--muted); font-size: 14px; }
+    .navlinks a:hover { color: var(--cyan); }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 100px 0 85px;
+      background:
+        radial-gradient(ellipse at 80% 25%, #163c68 0%, transparent 45%),
+        radial-gradient(ellipse at 10% 90%, #102b42 0%, transparent 40%);
+    }
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 12px;
+      letter-spacing: 3px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    h1 { font-size: clamp(42px, 8vw, 76px); line-height: 1.08; letter-spacing: -3px; margin: 20px 0; }
+    h1 span {
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      color: transparent;
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+    .hero p { color: var(--muted); max-width: 610px; font-size: 18px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+    .btn {
+      display: inline-block;
+      padding: 12px 21px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      border: 1px solid var(--blue);
+    }
+    .primary { background: var(--blue); color: #07101e; }
+    .secondary { color: var(--white); }
+    .btn:hover { transform: translateY(-2px); }
+    .section { padding: 75px 0; }
+    .section-title { font-size: clamp(28px, 5vw, 42px); line-height: 1.2; margin: 8px 0 14px; }
+    .intro { color: var(--muted); max-width: 680px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .card h3 { margin-top: 8px; }
+    .card p, .card li { color: var(--muted); font-size: 14px; }
+    .symbol { font-size: 30px; }
+    .number { color: var(--cyan); font-size: 13px; font-weight: bold; letter-spacing: 2px; }
+    .highlight {
+      background: linear-gradient(120deg, #10243d, #101a2d);
+      border: 1px solid #28466a;
+      border-radius: 18px;
+      padding: 32px;
+    }
+    .highlight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; }
+    .notice {
+      border-left: 3px solid var(--cyan);
+      padding: 12px 16px;
+      background: #0b1828;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 20px;
+    }
+    .community { background: #0b1323; border-block: 1px solid var(--line); }
+    .tag {
+      display: inline-block;
+      border: 1px solid #34516f;
+      border-radius: 30px;
+      padding: 5px 11px;
+      font-size: 12px;
+      color: var(--cyan);
+      margin: 4px 4px 4px 0;
+    }
+    footer { border-top: 1px solid var(--line); padding: 28px 0; color: var(--muted); font-size: 13px; }
+    .footer-row { display: flex; justify-content: space-between; gap: 15px; flex-wrap: wrap; }
+    @media (max-width: 760px) {
+      nav { align-items: flex-start; flex-direction: column; padding: 15px 0; gap: 10px; }
+      .navlinks { width: 100%; gap: 17px; flex-wrap: wrap; }
+      .navlinks a { font-size: 12px; }
+      .hero { padding: 65px 0; }
+      .grid { grid-template-columns: 1fr; }
+      .highlight-grid { grid-template-columns: 1fr; }
+      .section { padding: 55px 0; }
+      h1 { letter-spacing: -2px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav class="container">
+    <a class="logo" href="#home">NAJUA<span>TECH.</span></a>
+    <div class="navlinks">
+      <a href="#about">About</a>
+      <a href="#competition">Competition</a>
+      <a href="#community">Community</a>
+      <a href="#projects">Projects</a>
+      <a href="#partners">Partners</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" id="home">
+    <div class="container">
+      <div class="eyebrow">Technology · Innovation · Community</div>
+      <h1>The Future Is<br><span>Built Here.</span></h1>
+      <p>
+        A platform for Tanzania's next generation of technology talent.
+        Discover ideas, develop solutions, showcase your skills, and
+        connect with a community building tomorrow.
+      </p>
+      <div class="actions">
+        <a class="btn primary" href="#competition">Explore Najua Tech ↗</a>
+        <a class="btn secondary" href="#about">Discover Our Mission</a>
+      </div>
+      <div class="notice">
+        Competition dates, applications, and official announcements
+        will be published here when confirmed.
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="container">
+      <div class="eyebrow">Who We Are</div>
+      <h2 class="section-title">Ideas deserve a platform.</h2>
+      <p class="intro">
+        Najua Tech is being developed as a technology competition and
+        developer community that encourages young people to turn their
+        technical knowledge into practical innovation.
+      </p>
+      <div class="grid">
+        <article class="card">
+          <div class="symbol">⌘</div>
+          <h3>Discover Talent</h3>
+          <p>Create opportunities for emerging developers to demonstrate
+          their creativity, skills, and problem-solving abilities.</p>
+        </article>
+        <article class="card">
+          <div class="symbol">⚡</div>
+          <h3>Build Solutions</h3>
+          <p>Encourage the creation of websites, applications, software,
+          and ideas that can make a difference.</p>
+        </article>
+        <article class="card">
+          <div class="symbol">◎</div>
+          <h3>Connect People</h3>
+          <p>Bring developers, educators, technology companies, and
+          partners closer together.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section community" id="competition">
+    <div class="container">
+      <div class="highlight">
+        <div class="highlight-grid">
+          <div>
+            <div class="eyebrow">The Challenge</div>
+            <h2 class="section-title">Three months.<br>One vision.</h2>
+            <p class="intro">
+              Our proposed competition format moves from early selection
+              stages to a final development challenge where outstanding
+              talent can demonstrate what they can build.
+            </p>
+          </div>
+          <div>
+            <div class="card">
+              <div class="number">STAGE 01</div>
+              <h3>Discover & Select</h3>
+              <p>The proposed first stage introduces participants and
+              begins the elimination process.</p>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <div class="number">STAGE 02</div>
+              <h3>Develop & Advance</h3>
+              <p>The proposed second stage narrows the field and
+              challenges participants to progress.</p>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <div class="number">STAGE 03</div>
+              <h3>The Final Challenge</h3>
+              <p>Finalists demonstrate their abilities through a
+              development challenge.</p>
+            </div>
+          </div>
+        </div>
+        <div class="notice">
+          This is a preliminary overview, not the official rulebook.
+          Eligibility, dates, judging criteria, and prizes will be
+          announced after confirmation.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="community">
+    <div class="container">
+      <div class="eyebrow">Beyond the Competition</div>
+      <h2 class="section-title">A community that builds together.</h2>
+      <p class="intro">
+        Technology grows when people share knowledge. Our vision is to
+        create a place where developers can exchange ideas, discuss
+        technical challenges, share projects, and learn from one another.
+      </p>
+      <div style="margin-top:22px">
+        <span class="tag">Web Development</span>
+        <span class="tag">App Development</span>
+        <span class="tag">Software Engineering</span>
+        <span class="tag">Innovation</span>
+        <span class="tag">Collaboration</span>
+      </div>
+      <div class="notice">
+        The online discussion forum and member accounts are planned
+        features and are not active yet.
+      </div>
+    </div>
+  </section>
+
+  <section class="section community" id="projects">
+    <div class="container">
+      <div class="eyebrow">Innovation in Action</div>
+      <h2 class="section-title">Ideas become impact.</h2>
+      <p class="intro">
+        This space will showcase participant projects, creative
+        technology solutions, competition highlights, and achievements.
+      </p>
+      <div class="grid">
+        <article class="card">
+          <div class="symbol">⌘</div>
+          <h3>Web Experiences</h3>
+          <p>Websites and digital platforms designed to solve real problems.</p>
+        </article>
+        <article class="card">
+          <div class="symbol">▣</div>
+          <h3>Mobile Applications</h3>
+          <p>Application concepts that make everyday tasks easier.</p>
+        </article>
+        <article class="card">
+          <div class="symbol">⌬</div>
+          <h3>Software Solutions</h3>
+          <p>Creative software projects built around useful ideas.</p>
+        </article>
+      </div>
+      <p class="intro" style="margin-top:22px">
+        Participant submissions and project showcases will appear here
+        when the program is ready.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="partners">
+    <div class="container">
+      <div class="eyebrow">Build the Future With Us</div>
+      <h2 class="section-title">Partner with possibility.</h2>
+      <p class="intro">
+        We welcome conversations with organizations interested in
+        supporting technology education, young developers, innovation,
+        and opportunities for Tanzania's next generation.
+      </p>
+      <div class="actions">
+        <a class="btn primary" href="https://www.instagram.com/najuatech/">
+          Connect on Instagram ↗
+        </a>
+      </div>
+      <div class="notice">
+        No sponsors or partners are represented as confirmed on this page.
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-row">
+    <div><strong>NAJUA<span style="color:#56f0e0">TECH.</span></strong>
+      <br>Technology. Innovation. Community.</div>
+    <div>© <span id="year"></span> Najua Tech. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
