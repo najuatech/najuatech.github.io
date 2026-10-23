@@ -362,5 +362,229 @@
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+  
+<style>
+  #join-najua {
+    padding: 55px 20px;
+    background: #0b1224;
+    color: #f4f7ff;
+    font-family: Arial, sans-serif;
+  }
+
+  #join-najua .join-wrap {
+    max-width: 680px;
+    margin: auto;
+  }
+
+  #join-najua h2 {
+    color: #45d9ff;
+    text-align: center;
+    font-size: 30px;
+  }
+
+  #join-najua .join-intro {
+    text-align: center;
+    color: #c4cde0;
+    line-height: 1.7;
+  }
+
+  #join-najua label {
+    display: block;
+    margin: 18px 0 7px;
+    font-weight: bold;
+  }
+
+  #join-najua input,
+  #join-najua select,
+  #join-najua textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #354763;
+    border-radius: 8px;
+    background: #111d33;
+    color: white;
+    font: inherit;
+  }
+
+  #join-najua input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+  }
+
+  #join-najua .consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-weight: normal;
+    line-height: 1.5;
+  }
+
+  #join-najua button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px;
+    border: 0;
+    border-radius: 8px;
+    background: #32c9f4;
+    color: #071321;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  #join-najua #join-status {
+    margin-top: 18px;
+    line-height: 1.6;
+  }
+</style>
+
+<section id="join-najua">
+  <div class="join-wrap">
+    <h2>Join Najua Tech</h2>
+
+    <p class="join-intro">
+      Interested in technology, coding, or innovation?
+      Express your interest in joining the Najua Tech community.
+    </p>
+
+    <p class="join-intro">
+      This is an expression of interest, not official
+      registration for the competition. Dates and rules
+      will be announced separately.
+    </p>
+
+    <form id="najua-interest-form"
+      action="https://api.web3forms.com/submit"
+      method="POST">
+
+      <input type="hidden" name="access_key"
+        value="f4dddbfb-aa42-4ee9-88dd-7df3da599b28">
+
+      <input type="hidden" name="subject"
+        value="New Najua Tech Expression of Interest">
+
+      <input type="hidden" name="from_name"
+        value="Najua Tech Website">
+
+      <input type="checkbox" name="botcheck"
+        style="display:none">
+
+      <label for="najua-name">Full name *</label>
+      <input id="najua-name" type="text"
+        name="name" autocomplete="name"
+        required maxlength="100">
+
+      <label for="najua-email">Email address *</label>
+      <input id="najua-email" type="email"
+        name="email" autocomplete="email"
+        required maxlength="150">
+
+      <label for="najua-school">
+        University or college
+      </label>
+      <input id="najua-school" type="text"
+        name="university_or_college"
+        maxlength="150">
+
+      <label for="najua-level">
+        Current level of study
+      </label>
+      <select id="najua-level" name="study_level">
+        <option value="">Choose an option</option>
+        <option>Certificate or diploma</option>
+        <option>Undergraduate</option>
+        <option>Postgraduate</option>
+        <option>Other</option>
+        <option>Not currently studying</option>
+      </select>
+
+      <label for="najua-interest">
+        Main area of interest *
+      </label>
+      <select id="najua-interest" name="area_of_interest"
+        required>
+        <option value="">Choose an area</option>
+        <option>Web design and development</option>
+        <option>Mobile app development</option>
+        <option>Software development</option>
+        <option>UI/UX design</option>
+        <option>Artificial intelligence</option>
+        <option>Other technology fields</option>
+      </select>
+
+      <label for="najua-message">
+        Tell us briefly about your interests (optional)
+      </label>
+      <textarea id="najua-message" name="message"
+        rows="4" maxlength="1000"></textarea>
+
+      <label class="consent">
+        <input type="checkbox" name="consent"
+          value="Agreed" required>
+        <span>
+          I agree that Najua Tech may use the information
+          I submit to contact me about its community and
+          future competition announcements.
+        </span>
+      </label>
+
+      <button id="najua-submit" type="submit">
+        Submit Expression of Interest
+      </button>
+
+      <p id="join-status" role="status"
+        aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const najuaForm =
+    document.getElementById("najua-interest-form");
+  const najuaStatus =
+    document.getElementById("join-status");
+  const najuaButton =
+    document.getElementById("najua-submit");
+
+  najuaForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    najuaButton.disabled = true;
+    najuaButton.textContent = "Submitting...";
+    najuaStatus.textContent = "";
+
+    try {
+      const response = await fetch(najuaForm.action, {
+        method: "POST",
+        body: JSON.stringify(
+          Object.fromEntries(new FormData(najuaForm))
+        ),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        najuaStatus.textContent =
+          "Thank you! Your expression of interest has been submitted.";
+        najuaForm.reset();
+      } else {
+        najuaStatus.textContent =
+          "Submission failed. Please check your form setup and try again.";
+      }
+    } catch (error) {
+      najuaStatus.textContent =
+        "Could not connect. Check your internet and try again.";
+    } finally {
+      najuaButton.disabled = false;
+      najuaButton.textContent =
+        "Submit Expression of Interest";
+    }
+  });
+</script>
 </body>
 </html>
