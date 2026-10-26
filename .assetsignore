@@ -1,2 +1,3 @@
-.git
-.wrangler
+**/.git
+**/.wrangler
+**/.DS_Store
