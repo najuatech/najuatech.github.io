@@ -295,12 +295,12 @@
             body: JSON.stringify(payload)
           });
           passwordInput.value = "";
-          if (data.user) {
-            showMember(data.user);
-          } else {
-            showStatus("Signed in, but account details were not returned.");
-          }
-        }
+         if (data.user) {
+           window.location.href = "./dashboard.html";
+         } else {
+           showStatus("Signed in, but account details were not returned.");
+         }
+
       } catch (error) {
         showStatus(error.message);
       } finally {
