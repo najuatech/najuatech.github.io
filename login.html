@@ -264,6 +264,8 @@
       setMode("login");
     }
 
+   
+        
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       submitButton.disabled = true;
@@ -283,6 +285,7 @@
             method: "POST",
             body: JSON.stringify(payload)
           });
+
           passwordInput.value = "";
           showStatus(
             "Account created. Check the sign-in tab to continue. " +
@@ -293,20 +296,23 @@
           const data = await request("/api/auth/sign-in/email", {
             method: "POST",
             body: JSON.stringify(payload)
-          });
-          passwordInput.value = "";
-         if (data.user) {
-           window.location.href = "./dashboard.html";
-         } else {
-           showStatus("Signed in, but account details were not returned.");
-         }
+        });
 
-      } catch (error) {
-        showStatus(error.message);
-      } finally {
-        submitButton.disabled = false;
+        passwordInput.value = "";
+
+        if (data.user) {
+          window.location.href = "./dashboard.html";
+        } else {
+          showStatus("Signed in, but account details were not returned.");
+        }
       }
-    });
+     } catch (error) {
+      showStatus(error.message);
+     } finally {
+       submitButton.disabled = false;
+     }
+   });
+
 
     signoutButton.addEventListener("click", async () => {
       signoutButton.disabled = true;
