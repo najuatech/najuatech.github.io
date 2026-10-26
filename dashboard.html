@@ -1,1 +1,231 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d1a">
+  <title>Member Dashboard | Najua Tech</title>
+  <style>
+    :root {
+      --bg: #080d1a;
+      --panel: #101a2d;
+      --blue: #48a7ff;
+      --cyan: #56f0e0;
+      --white: #f5f8ff;
+      --muted: #a7b4ca;
+      --line: #24334b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 6%;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 21px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+    .brand span { color: var(--cyan); }
+    .container { width: min(1000px, 90%); margin: 40px auto; }
+    .muted { color: var(--muted); }
+    .panel {
+      padding: 26px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+    .welcome {
+      background: linear-gradient(120deg, #122744, #101a2d);
+      margin-bottom: 24px;
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(27px, 5vw, 40px); }
+    h2 { margin-top: 0; }
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+    .tile {
+      display: block;
+      padding: 22px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .tile:hover { border-color: var(--cyan); }
+    .tile .symbol { font-size: 26px; }
+    .tile h3 { margin: 10px 0 4px; }
+    button {
+      padding: 11px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #07101e;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; }
+    #status { overflow-wrap: anywhere; }
+    footer {
+      padding: 28px 5%;
+      text-align: center;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./">NAJUA<span>TECH</span></a>
+    <button id="signout" type="button">Sign out</button>
+  </header>
+
+  <main class="container">
+    <section class="panel welcome">
+      <p class="eyebrow">MEMBER DASHBOARD</p>
+      <h1>Welcome, <span id="member-name">member</span>!</h1>
+      <p class="muted">Your technology journey starts here.</p>
+      <p id="status" role="status" aria-live="polite">Checking your account...</p>
+    </section>
+
+    <section>
+      <h2>Your workspace</h2>
+      <p class="muted">Your member tools will grow as we build Najua Tech.</p>
+
+      <div class="grid">
+        <a class="tile" href="#profile">
+          <div class="symbol">👤</div>
+          <h3>My Profile</h3>
+          <p class="muted">View your account details.</p>
+        </a>
+        <a class="tile" href="#projects">
+          <div class="symbol">💻</div>
+          <h3>My Projects</h3>
+          <p class="muted">Prepare to showcase your work.</p>
+        </a>
+        <a class="tile" href="#competition">
+          <div class="symbol">🏆</div>
+          <h3>Competition</h3>
+          <p class="muted">Find competition information.</p>
+        </a>
+        <a class="tile" href="https://najuatech.discourse.group/">
+          <div class="symbol">💬</div>
+          <h3>Community</h3>
+          <p class="muted">Visit the Najua Tech Forum.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="panel" id="profile" style="margin-top:24px">
+      <h2>Account details</h2>
+      <p><strong>Name:</strong> <span id="profile-name">Loading...</span></p>
+      <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
+      <p class="muted">Keep your login credentials private.</p>
+    </section>
+
+    <section class="panel" id="projects" style="margin-top:24px">
+      <h2>My Projects</h2>
+      <p class="muted">Project submissions are not enabled yet. We'll build this feature next.</p>
+    </section>
+
+    <section class="panel" id="competition" style="margin-top:24px">
+      <h2>Competition</h2>
+      <p class="muted">Competition application tracking will be added in a future step.</p>
+      <a href="./#join-najua" style="color:var(--cyan)">Visit the main website</a>
+    </section>
+  </main>
+
+  <footer>© Najua Tech — Build. Create. Innovate.</footer>
+
+  <script>
+    const API = "https://najua-auth-app.najuatech.workers.dev";
+    const status = document.getElementById("status");
+
+    async function apiRequest(path, options = {}) {
+      const response = await fetch(API + path, {
+        ...options,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+
+      let data = {};
+      try { data = await response.json(); } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || "Request failed.");
+      }
+      return data;
+    }
+
+    async function loadMember() {
+      try {
+        const data = await apiRequest("/api/auth/get-session");
+
+        if (!data.user) {
+          status.textContent = "Please sign in to access your dashboard.";
+          window.location.replace("./login.html");
+          return;
+        }
+
+        const user = data.user;
+        document.getElementById("member-name").textContent =
+          user.name || user.email || "member";
+        document.getElementById("profile-name").textContent =
+          user.name || "Not provided";
+        document.getElementById("profile-email").textContent =
+          user.email || "Not provided";
+        status.textContent = "You are securely signed in.";
+      } catch (error) {
+        status.textContent =
+          "We couldn't verify your session. Please sign in again.";
+        window.location.replace("./login.html");
+      }
+    }
+
+    document.getElementById("signout").addEventListener("click", async () => {
+      const button = document.getElementById("signout");
+      button.disabled = true;
+      try {
+        await apiRequest("/api/auth/sign-out", {
+          method: "POST",
+          body: JSON.stringify({})
+        });
+      } catch (_) {
+        // Return to sign-in even if the session has already expired.
+      }
+      window.location.replace("./login.html");
+    });
+
+    loadMember();
+  </script>
+</body>
+</html>
+
