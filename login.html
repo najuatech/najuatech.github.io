@@ -1,1 +1,340 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d1a">
+  <meta name="description" content="Sign in or create your Najua Tech account.">
+  <title>Member Access | Najua Tech</title>
+  <style>
+    :root {
+      --bg: #080d1a;
+      --panel: #101a2d;
+      --blue: #48a7ff;
+      --cyan: #56f0e0;
+      --white: #f5f8ff;
+      --muted: #a7b4ca;
+      --line: #24334b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+    }
+    .wrap { width: min(440px, 100%); }
+    .brand {
+      display: block;
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+    .brand span { color: var(--cyan); }
+    .panel {
+      padding: 28px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+    h1 { margin: 0 0 8px; font-size: 30px; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 24px 0;
+    }
+    .tabs button, .submit, .back {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .tabs button {
+      color: var(--muted);
+      background: #0b1323;
+    }
+    .tabs button.active {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+    label {
+      display: block;
+      margin: 16px 0 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      color: var(--white);
+      background: #080d1a;
+      border: 1px solid #354763;
+      border-radius: 8px;
+      font: inherit;
+    }
+    input:focus {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+    .submit {
+      width: 100%;
+      margin-top: 22px;
+      border: 0;
+      background: var(--blue);
+      color: #07101e;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    #status {
+      min-height: 48px;
+      margin: 16px 0 0;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+    .back {
+      display: block;
+      margin-top: 18px;
+      text-align: center;
+      color: var(--white);
+      text-decoration: none;
+      background: transparent;
+    }
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="brand" href="./">NAJUA<span>TECH</span></a>
+
+    <section class="panel">
+      <h1 id="heading">Welcome back</h1>
+      <p class="muted" id="intro">
+        Sign in to access your Najua Tech account.
+      </p>
+
+      <div class="tabs" aria-label="Account access">
+        <button type="button" id="login-tab"
+          class="active" aria-pressed="true">Sign in</button>
+        <button type="button" id="signup-tab"
+          aria-pressed="false">Create account</button>
+      </div>
+
+      <form id="auth-form">
+        <div id="name-field" hidden>
+          <label for="name">Full name</label>
+          <input id="name" name="name" autocomplete="name"
+            maxlength="100">
+        </div>
+
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email"
+          autocomplete="email" maxlength="150" required>
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password"
+          autocomplete="current-password" minlength="8"
+          required>
+
+        <button class="submit" id="submit-button" type="submit">
+          Sign in
+        </button>
+      </form>
+
+      <p id="status" role="status" aria-live="polite"></p>
+
+      <div id="member-panel" hidden>
+        <p id="member-message"></p>
+        <button class="submit" type="button" id="signout-button">
+          Sign out
+        </button>
+      </div>
+
+      <a class="back" href="./">← Back to Najua Tech</a>
+
+      <p class="note">
+        Email verification is not enabled yet. Use an email address
+        you control and a unique password. Never reuse a password
+        from another account.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const API = "https://najua-auth-app.najuatech.workers.dev";
+
+    const form = document.getElementById("auth-form");
+    const nameField = document.getElementById("name-field");
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const heading = document.getElementById("heading");
+    const intro = document.getElementById("intro");
+    const status = document.getElementById("status");
+    const submitButton = document.getElementById("submit-button");
+    const loginTab = document.getElementById("login-tab");
+    const signupTab = document.getElementById("signup-tab");
+    const memberPanel = document.getElementById("member-panel");
+    const memberMessage = document.getElementById("member-message");
+    const signoutButton = document.getElementById("signout-button");
+
+    let mode = "login";
+
+    function showStatus(message) {
+      status.textContent = message;
+    }
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      const signup = mode === "signup";
+
+      heading.textContent = signup ? "Create your account" : "Welcome back";
+      intro.textContent = signup
+        ? "Join the Najua Tech community."
+        : "Sign in to access your Najua Tech account.";
+      nameField.hidden = !signup;
+      nameInput.required = signup;
+      passwordInput.autocomplete = signup
+        ? "new-password" : "current-password";
+      submitButton.textContent = signup ? "Create account" : "Sign in";
+
+      loginTab.classList.toggle("active", !signup);
+      signupTab.classList.toggle("active", signup);
+      loginTab.setAttribute("aria-pressed", String(!signup));
+      signupTab.setAttribute("aria-pressed", String(signup));
+      showStatus("");
+    }
+
+    loginTab.addEventListener("click", () => setMode("login"));
+    signupTab.addEventListener("click", () => setMode("signup"));
+
+    async function request(path, options = {}) {
+      const response = await fetch(API + path, {
+        ...options,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || data.error || "Request failed. Please try again."
+        );
+      }
+      return data;
+    }
+
+    function showMember(user) {
+      form.hidden = true;
+      document.querySelector(".tabs").hidden = true;
+      memberPanel.hidden = false;
+      heading.textContent = "You're signed in";
+      intro.textContent = "Welcome to Najua Tech.";
+      memberMessage.textContent =
+        "Signed in as " + (user.name || user.email) + ".";
+      showStatus("");
+    }
+
+    function showForm() {
+      form.hidden = false;
+      document.querySelector(".tabs").hidden = false;
+      memberPanel.hidden = true;
+      setMode("login");
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submitButton.disabled = true;
+      showStatus(mode === "signup"
+        ? "Creating your account..."
+        : "Signing you in...");
+
+      try {
+        const payload = {
+          email: emailInput.value.trim(),
+          password: passwordInput.value
+        };
+
+        if (mode === "signup") {
+          payload.name = nameInput.value.trim();
+          await request("/api/auth/sign-up/email", {
+            method: "POST",
+            body: JSON.stringify(payload)
+          });
+          passwordInput.value = "";
+          showStatus(
+            "Account created. Check the sign-in tab to continue. " +
+            "Email verification is not enabled yet."
+          );
+          setMode("login");
+        } else {
+          const data = await request("/api/auth/sign-in/email", {
+            method: "POST",
+            body: JSON.stringify(payload)
+          });
+          passwordInput.value = "";
+          if (data.user) {
+            showMember(data.user);
+          } else {
+            showStatus("Signed in, but account details were not returned.");
+          }
+        }
+      } catch (error) {
+        showStatus(error.message);
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+
+    signoutButton.addEventListener("click", async () => {
+      signoutButton.disabled = true;
+      try {
+        await request("/api/auth/sign-out", {
+          method: "POST",
+          body: JSON.stringify({})
+        });
+        showForm();
+        showStatus("You have signed out.");
+      } catch (error) {
+        showStatus(error.message);
+      } finally {
+        signoutButton.disabled = false;
+      }
+    });
+
+    async function checkSession() {
+      try {
+        const data = await request("/api/auth/get-session");
+        if (data.user) showMember(data.user);
+      } catch (_) {
+        // If there is no active session, keep the login form visible.
+      }
+    }
+
+    checkSession();
+  </script>
+</body>
+</html>
+
