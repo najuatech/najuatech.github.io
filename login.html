@@ -175,9 +175,10 @@
     </section>
   </main>
 
+  
   <script>
     const API = "https://najua-auth-app.najuatech.workers.dev";
-
+    
     const form = document.getElementById("auth-form");
     const nameField = document.getElementById("name-field");
     const nameInput = document.getElementById("name");
@@ -220,82 +221,81 @@
       showStatus("");
     }
 
-    loginTab.addEventListener("click", () => setMode("login"));
-    signupTab.addEventListener("click", () => setMode("signup"));
+      loginTab.addEventListener("click", () => setMode("login"));
+      signupTab.addEventListener("click", () => setMode("signup"));
 
-    async function request(path, options = {}) {
-      const response = await fetch(API + path, {
-        ...options,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {})
+      async function request(path, options = {}) {
+        const response = await fetch(API + path, {
+          ...options,
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+          }
+        });
+
+        let data = {};
+        try {
+          data = await response.json();
+        } catch (_) {}
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || data.error || "Request failed. Please try again."
+          );
         }
-      });
 
-      let data = {};
-      try {
-        data = await response.json();
-      } catch (_) {}
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || data.error || "Request failed. Please try again."
-        );
+        return data;
       }
-      return data;
-    }
 
-    function showMember(user) {
-      form.hidden = true;
-      document.querySelector(".tabs").hidden = true;
-      memberPanel.hidden = false;
-      heading.textContent = "You're signed in";
-      intro.textContent = "Welcome to Najua Tech.";
-      memberMessage.textContent =
-        "Signed in as " + (user.name || user.email) + ".";
-      showStatus("");
-    }
+      function showMember(user) {
+        form.hidden = true;
+        document.querySelector(".tabs").hidden = true;
+        memberPanel.hidden = false;
+        heading.textContent = "You're signed in";
+        intro.textContent = "Welcome to Najua Tech.";
+        memberMessage.textContent =
+          "Signed in as " + (user.name || user.email) + ".";
+        showStatus("");
+      }
 
-    function showForm() {
-      form.hidden = false;
-      document.querySelector(".tabs").hidden = false;
-      memberPanel.hidden = true;
-      setMode("login");
-    }
+      function showForm() {
+        form.hidden = false;
+        document.querySelector(".tabs").hidden = false;
+        memberPanel.hidden = true;
+        setMode("login");
+      }
 
-   
-        
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      submitButton.disabled = true;
-      showStatus(mode === "signup"
-        ? "Creating your account..."
-        : "Signing you in...");
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        submitButton.disabled = true;
+        showStatus(mode === "signup"
+          ? "Creating your account..."
+          : "Signing you in...");
 
       try {
         const payload = {
-          email: emailInput.value.trim(),
-          password: passwordInput.value
-        };
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+      };
 
-        if (mode === "signup") {
-          payload.name = nameInput.value.trim();
-          await request("/api/auth/sign-up/email", {
-            method: "POST",
-            body: JSON.stringify(payload)
-          });
+      if (mode === "signup") {
+        payload.name = nameInput.value.trim();
+        await request("/api/auth/sign-up/email", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
 
-          passwordInput.value = "";
-          showStatus(
-            "Account created. Check the sign-in tab to continue. " +
-            "Email verification is not enabled yet."
-          );
-          setMode("login");
-        } else {
-          const data = await request("/api/auth/sign-in/email", {
-            method: "POST",
-            body: JSON.stringify(payload)
+        passwordInput.value = "";
+        showStatus(
+          "Account created. Check the sign-in tab to continue. " +
+          "Email verification is not enabled yet."
+        );
+        setMode("login");
+      } else {
+        const data = await request("/api/auth/sign-in/email", {
+          method: "POST",
+          body: JSON.stringify(payload)
         });
 
         passwordInput.value = "";
@@ -306,40 +306,41 @@
           showStatus("Signed in, but account details were not returned.");
         }
       }
-     } catch (error) {
+    } catch (error) {
       showStatus(error.message);
-     } finally {
-       submitButton.disabled = false;
-     }
-   });
-
-
-    signoutButton.addEventListener("click", async () => {
-      signoutButton.disabled = true;
-      try {
-        await request("/api/auth/sign-out", {
-          method: "POST",
-          body: JSON.stringify({})
-        });
-        showForm();
-        showStatus("You have signed out.");
-      } catch (error) {
-        showStatus(error.message);
-      } finally {
-        signoutButton.disabled = false;
-      }
-    });
-
-    async function checkSession() {
-      try {
-        const data = await request("/api/auth/get-session");
-        if (data.user) showMember(data.user);
-      } catch (_) {
-        // If there is no active session, keep the login form visible.
-      }
+    } finally {
+      submitButton.disabled = false;
     }
+  });
 
-    checkSession();
+  signoutButton.addEventListener("click", async () => {
+    signoutButton.disabled = true;
+
+    try {
+      await request("/api/auth/sign-out", {
+        method: "POST",
+        body: JSON.stringify({})
+      });
+
+      showForm();
+      showStatus("You have signed out.");
+    } catch (error) {
+      showStatus(error.message);
+    } finally {
+      signoutButton.disabled = false;
+    }
+  });
+
+  async function checkSession() {
+    try {
+      const data = await request("/api/auth/get-session");
+      if (data.user) showMember(data.user);
+    } catch (_) {
+      // If there is no active session, keep the login form visible.
+    }
+  }
+
+  checkSession();
   </script>
 </body>
 </html>
