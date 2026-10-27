@@ -1,0 +1,505 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d1a">
+  <title>Developer Forum | Najua Tech</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d1a;
+      --panel: #101a2d;
+      --line: #24334b;
+      --blue: #48a7ff;
+      --cyan: #56f0e0;
+      --white: #f5f8ff;
+      --muted: #a7b4ca;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--white);
+      font: 16px/1.6 system-ui, sans-serif;
+    }
+
+    a { color: var(--cyan); }
+
+    .wrap {
+      width: min(100% - 32px, 920px);
+      margin: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      padding: 18px 0;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      color: var(--white);
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .navlinks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .navlinks a {
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    main { padding: 32px 0 60px; }
+
+    .hero { margin-bottom: 24px; }
+
+    .eyebrow {
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.15; }
+    h2 { font-size: 21px; margin-top: 0; }
+
+    .muted { color: var(--muted); }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      margin: 20px 0;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin: 14px 0 6px;
+    }
+
+    input, textarea, select {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      color: var(--white);
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      font: inherit;
+    }
+
+    textarea { min-height: 130px; resize: vertical; }
+
+    button {
+      padding: 11px 16px;
+      border: 0;
+      border-radius: 9px;
+      color: #07111c;
+      background: var(--cyan);
+      font-weight: 750;
+      cursor: pointer;
+      margin-top: 14px;
+    }
+
+    button.secondary {
+      background: #1b2b43;
+      color: var(--white);
+      border: 1px solid var(--line);
+    }
+
+    button:disabled { opacity: .6; cursor: wait; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .post {
+      border-top: 1px solid var(--line);
+      padding: 20px 0;
+    }
+
+    .post:first-child { border-top: 0; }
+
+    .post h3 { margin: 4px 0; font-size: 20px; }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 9px;
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      color: var(--cyan);
+      font-size: 12px;
+    }
+
+    .content {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .reply {
+      border-left: 2px solid var(--line);
+      padding: 8px 12px;
+      margin: 12px 0;
+    }
+
+    .reply-form { margin-top: 12px; }
+
+    .status { min-height: 24px; color: var(--cyan); }
+    .error { color: #ff9b9b; }
+
+    footer {
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="wrap">
+      <a class="brand" href="./index.html">NAJUA TECH</a>
+      <div class="navlinks">
+        <a href="./index.html">Home</a>
+        <a href="./dashboard.html">Dashboard</a>
+        <a href="./login.html" id="accountLink">Sign in</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Build. Create. Innovate.</div>
+      <h1>The Developer Community</h1>
+      <p class="muted">
+        Ask questions, share what you're building, and learn together.
+        This is your space to discuss technology with other developers.
+      </p>
+      <p id="welcome" class="muted">Checking your member session…</p>
+    </section>
+
+    <section class="panel" id="composer">
+      <h2>Start a discussion</h2>
+      <p class="muted">Share a question, idea, challenge or project.</p>
+
+      <form id="postForm">
+        <label for="title">Discussion title</label>
+        <input id="title" name="title" maxlength="150" required
+          placeholder="What would you like to discuss?">
+
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          <option>Web Development</option>
+          <option>App Development</option>
+          <option>Software</option>
+          <option>General</option>
+        </select>
+
+        <label for="content">Your message</label>
+        <textarea id="content" name="content" maxlength="10000"
+          required placeholder="Explain your question or 
+idea…"></textarea>
+
+        <button id="publishButton" type="submit">Publish 
+discussion</button>
+      </form>
+      <p id="composerStatus" class="status" role="status"></p>
+    </section>
+
+    <section class="panel">
+      <div class="row">
+        <div>
+          <h2 style="margin-bottom:0">Community discussions</h2>
+          <p class="muted" style="margin-top:4px">
+            Conversations from Najua Tech members.
+          </p>
+        </div>
+        <button class="secondary" id="refreshButton" type="button">
+          Refresh
+        </button>
+      </div>
+
+      <p id="feedStatus" class="status" role="status">Loading 
+discussions…</p>
+      <div id="posts"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">© Najua Tech — Build. Create. Innovate.</div>
+  </footer>
+
+  <script>
+    const API = "https://najua-auth-app.najuatech.workers.dev";
+
+    const $ = (id) => document.getElementById(id);
+    const postsElement = $("posts");
+    const feedStatus = $("feedStatus");
+    const composerStatus = $("composerStatus");
+    const publishButton = $("publishButton");
+
+    let signedInUser = null;
+
+    async function apiRequest(path, options = {}) {
+      const response = await fetch(API + path, {
+        ...options,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || data.error || `Request failed 
+(${response.status}).`
+        );
+      }
+
+      return data;
+    }
+
+    function makeElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+
+    function showStatus(element, message, isError = false) {
+      element.textContent = message;
+      element.classList.toggle("error", isError);
+    }
+
+    async function checkSession() {
+      try {
+        const data = await apiRequest("/api/auth/get-session");
+        signedInUser = data.user || null;
+
+        if (!signedInUser) {
+          $("welcome").textContent =
+            "Sign in to publish discussions and reply to members.";
+          $("accountLink").textContent = "Sign in";
+          $("composer").hidden = false;
+          publishButton.disabled = true;
+          showStatus(composerStatus, "Sign in before publishing.");
+          return;
+        }
+
+        $("welcome").textContent =
+          `Signed in as ${signedInUser.name || signedInUser.email || 
+"member"}`;
+        $("accountLink").textContent = "Your account";
+        publishButton.disabled = false;
+        showStatus(composerStatus, "");
+      } catch (error) {
+        $("welcome").textContent = "We couldn't verify your session.";
+        publishButton.disabled = true;
+        showStatus(composerStatus, error.message, true);
+      }
+    }
+
+    function renderPost(post) {
+      const article = makeElement("article", "post");
+      const top = makeElement("div", "row");
+      top.appendChild(makeElement("span", "tag", post.category || 
+"General"));
+
+      const author = post.author_name || "Najua Tech member";
+      const date = post.created_at
+        ? new Date(post.created_at.replace(" ", "T") + "Z").toLocaleString()
+        : "";
+
+      top.appendChild(makeElement(
+        "span",
+        "muted",
+        `${author}${date ? " · " + date : ""}`
+      ));
+      article.appendChild(top);
+      article.appendChild(makeElement("h3", "", post.title || "Untitled discussion"));
+      article.appendChild(makeElement("p", "content", post.content || ""));
+      article.appendChild(makeElement(
+        "p", "muted", `${Number(post.reply_count) || 0} replies`
+      ));
+
+      const repliesBox = makeElement("div", "replies");
+      const replyForm = makeElement("form", "reply-form");
+      const replyLabel = makeElement("label", "", "Write a reply");
+      const replyInput = makeElement("textarea");
+      replyInput.rows = 2;
+      replyInput.maxLength = 5000;
+      replyInput.required = true;
+      replyInput.placeholder = "Help answer or continue the discussion…";
+      replyLabel.appendChild(replyInput);
+
+      const replyButton = makeElement("button", "", "Send reply");
+      replyButton.type = "submit";
+      replyButton.disabled = !signedInUser;
+
+      const replyStatus = makeElement("p", "status");
+      replyStatus.setAttribute("role", "status");
+
+      replyForm.append(replyLabel, replyButton, replyStatus);
+      article.append(repliesBox, replyForm);
+
+      async function loadReplies() {
+        repliesBox.replaceChildren();
+        try {
+          const data = await apiRequest(
+            `/api/forum/posts/${encodeURIComponent(post.id)}/replies`
+          );
+
+          if (!data.replies || data.replies.length === 0) {
+            repliesBox.appendChild(makeElement(
+              "p", "muted", "No replies yet. Start the conversation."
+            ));
+          } else {
+            for (const reply of data.replies) {
+              const item = makeElement("div", "reply");
+              item.appendChild(makeElement(
+                "strong", "", reply.author_name || "Member"
+              ));
+              item.appendChild(makeElement("p", "content", reply.content 
+|| ""));
+              item.appendChild(makeElement(
+                "small", "muted", reply.created_at || ""
+              ));
+              repliesBox.appendChild(item);
+            }
+          }
+        } catch (error) {
+          repliesBox.appendChild(makeElement(
+            "p", "error", `Couldn't load replies: ${error.message}`
+          ));
+        }
+      }
+
+      replyForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!signedInUser) {
+          showStatus(replyStatus, "Sign in to reply.", true);
+          return;
+        }
+
+        replyButton.disabled = true;
+        showStatus(replyStatus, "Sending reply…");
+
+        try {
+          await apiRequest(
+            `/api/forum/posts/${encodeURIComponent(post.id)}/replies`,
+            {
+              method: "POST",
+              body: JSON.stringify({ content: replyInput.value.trim() })
+            }
+          );
+
+          replyInput.value = "";
+          await loadReplies();
+          showStatus(replyStatus, "Reply published.");
+          await loadPosts(false);
+        } catch (error) {
+          showStatus(replyStatus, error.message, true);
+        } finally {
+          replyButton.disabled = !signedInUser;
+        }
+      });
+
+      loadReplies();
+      return article;
+    }
+
+    async function loadPosts(showLoading = true) {
+      if (showLoading) showStatus(feedStatus, "Loading discussions…");
+
+      try {
+        const data = await apiRequest("/api/forum/posts");
+        postsElement.replaceChildren();
+
+        if (!Array.isArray(data.posts) || data.posts.length === 0) {
+          showStatus(feedStatus, "No discussions yet. Be the first to post.");
+          return;
+        }
+
+        for (const post of data.posts) {
+          postsElement.appendChild(renderPost(post));
+        }
+
+        showStatus(feedStatus, `${data.posts.length} discussions loaded.`);
+      } catch (error) {
+        showStatus(feedStatus, `Couldn't load discussions: ${error.message}`, true);
+      }
+    }
+
+    $("postForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!signedInUser) {
+        showStatus(composerStatus, "Please sign in before publishing.", 
+true);
+        return;
+      }
+
+      publishButton.disabled = true;
+      showStatus(composerStatus, "Publishing discussion…");
+
+      try {
+        const title = $("title").value.trim();
+        const content = $("content").value.trim();
+        const category = $("category").value;
+
+        await apiRequest("/api/forum/posts", {
+          method: "POST",
+          body: JSON.stringify({ title, content, category })
+        });
+
+        $("postForm").reset();
+        showStatus(composerStatus, "Discussion published successfully.");
+        await loadPosts();
+      } catch (error) {
+        showStatus(composerStatus, error.message, true);
+      } finally {
+        publishButton.disabled = !signedInUser;
+      }
+    });
+
+    $("refreshButton").addEventListener("click", () => loadPosts());
+
+    async function init() {
+      await checkSession();
+      await loadPosts();
+    }
+
+    init();
+  </script>
+</body>
+</html>
+
