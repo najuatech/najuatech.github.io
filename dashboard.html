@@ -493,8 +493,38 @@
             </div>
           </div>
 
-          <div class="notice muted">
-            Keep your password private. Profile editing will be added in a later step.
+          <div class="section">
+            <h2>Edit my profile</h2>
+            <p class="muted small">
+              Tell the Najua Tech community about yourself and your interests.
+            </p>
+
+            <form id="profile-form">
+              <label for="bio">About me</label>
+              <textarea id="bio" rows="3" maxlength="1000"
+                placeholder="Introduce yourself..."
+                style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px"></textarea>
+
+                <label for="skills">Skills</label>
+                <textarea id="skills" rows="2" maxlength="1000"
+                  placeholder="e.g. HTML, CSS, JavaScript"
+                  style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px"></textarea>
+
+                <label for="interests">Interests</label>
+                <textarea id="interests" rows="2" maxlength="1000"
+                  placeholder="What do you enjoy building?"
+                  style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px"></textarea>
+
+                <label for="focus_area">Focus area</label>
+                <input id="focus_area" maxlength="200"
+                  placeholder="e.g. Web Development"
+                  style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px">
+
+                <button class="button button-primary" id="save-profile" type="submit">
+                  Save profile
+                </button>
+                <p id="profile-status" role="status" aria-live="polite"></p>
+              </form>
           </div>
         </section>
 
