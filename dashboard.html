@@ -610,12 +610,75 @@
         document.getElementById("avatar").textContent = initial;
 
         status.textContent = "You are securely signed in.";
+        await loadProfile();
       } catch (error) {
         status.textContent =
           "We couldn't verify your session. Please sign in again.";
         window.location.replace("./login.html");
       }
     }
+    
+    // Load the member's saved profile
+    async function loadProfile() {
+      const profileStatus = document.getElementById("profile-status");
+
+      try {
+        const data = await apiRequest("/api/profile");
+        const profile = data.profile || data;
+
+        document.getElementById("bio").value =
+          profile.bio || "";
+
+        document.getElementById("skills").value =
+          profile.skills || "";
+
+        document.getElementById("interests").value =
+          profile.interests || "";
+
+        document.getElementById("focus_area").value =
+          profile.focus_area || "";
+      } catch (error) {
+        profileStatus.textContent =
+          "Could not load your profile. You can still try saving.";
+      }
+    }
+
+    // Save profile changes
+    document.getElementById("profile-form").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+        const saveButton = document.getElementById("save-profile");
+        const profileStatus = document.getElementById("profile-status");
+
+        const profile = {
+          bio: document.getElementById("bio").value.trim(),
+          skills: document.getElementById("skills").value.trim(),
+          interests: document.getElementById("interests").value.trim(),
+          focus_area: document.getElementById("focus_area").value.trim()
+        };
+
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+        profileStatus.textContent = "";
+
+        try {
+          await apiRequest("/api/profile", {
+            method: "POST",
+            body: JSON.stringify(profile)
+          });
+
+          profileStatus.textContent = "Profile saved successfully!";
+        } catch (error) {
+          profileStatus.textContent =
+            "Could not save your profile: " + error.message;
+        } finally {
+          saveButton.disabled = false;
+          saveButton.textContent = "Save profile";
+        }
+      }
+    );
 
     signoutButton.addEventListener("click", async () => {
       signoutButton.disabled = true;
