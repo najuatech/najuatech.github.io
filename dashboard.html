@@ -383,7 +383,7 @@
         <a href="#profile">♙ My profile</a>
         <a href="#projects">▤ My projects</a>
         <a href="#competition">🏆 Competition</a>
-        <a href="https://najuatech.discourse.group/">☷ Community</a>
+        <a href="./forum.html">☷ Community</a>
       </nav>
 
       <div class="sidebar-bottom">
@@ -450,7 +450,7 @@
               <span class="feature-link">View opportunities →</span>
             </a>
 
-            <a class="card feature" href="https://najuatech.discourse.group/">
+            <a class="card feature" href="./forum.html">
               <div class="symbol">💬</div>
               <h3>Community</h3>
               <p class="muted">Meet other members and join Najua Tech discussions.</p>
@@ -498,33 +498,32 @@
             <p class="muted small">
               Tell the Najua Tech community about yourself and your interests.
             </p>
-
             <form id="profile-form">
               <label for="bio">About me</label>
-              <textarea id="bio" rows="3" maxlength="1000"
+              <textarea id="bio" name="bio" rows="3" maxlength="1000"
                 placeholder="Introduce yourself..."
-                style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px"></textarea>
+                style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px;background:#0c1425;color:#f5f8ff;border:1px solid #24334b;font:inherit"></textarea>
 
-                <label for="skills">Skills</label>
-                <textarea id="skills" rows="2" maxlength="1000"
-                  placeholder="e.g. HTML, CSS, JavaScript"
-                  style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px"></textarea>
+              <label for="skills">Skills</label>
+              <textarea id="skills" name="skills" rows="2" maxlength="1000"
+                placeholder="e.g. HTML, CSS, JavaScript"
+                style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px;background:#0c1425;color:#f5f8ff;border:1px solid #24334b;font:inherit"></textarea>
 
-                <label for="interests">Interests</label>
-                <textarea id="interests" rows="2" maxlength="1000"
-                  placeholder="What do you enjoy building?"
-                  style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px"></textarea>
+              <label for="interests">Interests</label>
+              <textarea id="interests" name="interests" rows="2" maxlength="1000"
+                placeholder="What do you enjoy building?"
+                style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px;background:#0c1425;color:#f5f8ff;border:1px solid #24334b;font:inherit"></textarea>
 
-                <label for="focus_area">Focus area</label>
-                <input id="focus_area" maxlength="200"
-                  placeholder="e.g. Web Development"
-                  style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px">
+              <label for="focus_area">Focus area</label>
+              <input id="focus_area" name="focus_area" maxlength="100"
+                placeholder="e.g. Web Development"
+                style="display:block;width:100%;margin:8px 0 16px;padding:12px;border-radius:8px;background:#0c1425;color:#f5f8ff;border:1px solid #24334b;font:inherit">
 
-                <button class="button button-primary" id="save-profile" type="submit">
-                  Save profile
-                </button>
-                <p id="profile-status" role="status" aria-live="polite"></p>
-              </form>
+              <button class="button button-primary" id="save-profile" type="submit">
+                Save profile
+              </button>
+              <p id="profile-status" class="muted small" role="status" aria-live="polite"></p>
+            </form>
           </div>
         </section>
 
@@ -563,6 +562,7 @@
 
   <script>
     const API = "https://najua-auth-app.najuatech.workers.dev";
+
     const status = document.getElementById("status");
     const signoutButton = document.getElementById("signout");
 
@@ -694,6 +694,54 @@
       }
 
       window.location.replace("./login.html");
+    });
+
+
+    const profileForm = document.getElementById("profile-form");
+    const profileStatus = document.getElementById("profile-status");
+    const saveProfileButton = document.getElementById("save-profile");
+
+    async function loadProfile() {
+      try {
+        const data = await apiRequest("/api/profile");
+        const profile = data.profile || data;
+
+        document.getElementById("bio").value = profile.bio || "";
+        document.getElementById("skills").value = profile.skills || "";
+        document.getElementById("interests").value = profile.interests || "";
+        document.getElementById("focus_area").value = profile.focus_area || "";
+      } catch (error) {
+        profileStatus.textContent =
+          "Your profile could not be loaded. Please try refreshing.";
+      }
+    }
+
+    profileForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      saveProfileButton.disabled = true;
+      saveProfileButton.textContent = "Saving...";
+      profileStatus.textContent = "";
+
+      const profile = {
+        bio: document.getElementById("bio").value.trim(),
+        skills: document.getElementById("skills").value.trim(),
+        interests: document.getElementById("interests").value.trim(),
+        focus_area: document.getElementById("focus_area").value.trim()
+      };
+
+      try {
+        await apiRequest("/api/profile", {
+          method: "POST",
+          body: JSON.stringify(profile)
+        });
+        profileStatus.textContent = "Profile saved successfully.";
+      } catch (error) {
+        profileStatus.textContent =
+          "Could not save your profile: " + error.message;
+      } finally {
+        saveProfileButton.disabled = false;
+        saveProfileButton.textContent = "Save profile";
+      }
     });
 
     loadMember();
