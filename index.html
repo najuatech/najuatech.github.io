@@ -98,7 +98,11 @@
       position: relative;
       isolation: isolate;
       overflow: hidden;
-      padding: 105px 0 100px;
+      min-height: calc(100vh - 76px);
+      min-height: calc(100svh - 76px);
+      display: flex;
+      align-items: center;
+      padding: 80px 0;
       background:
         radial-gradient(ellipse at 75% 45%, rgba(20, 105, 255, .17), transparent 52%),
         linear-gradient(135deg, #080d1a 0%, #0a1428 55%, #07101f 100%);
@@ -108,7 +112,7 @@
       position: absolute;
       inset: 0;
       z-index: -1;
-      background: url("Logo.png") center center / min(72vw, 760px) auto no-repeat;
+      background: url("Logo.png") center center / cover no-repeat;
       opacity: .13;
       filter: drop-shadow(0 0 24px rgba(72, 167, 255, .25));
       pointer-events: none;
