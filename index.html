@@ -144,6 +144,31 @@
       border-radius: 14px;
       padding: 24px;
     }
+    #about .card {
+      background: linear-gradient(145deg, rgba(17, 34, 57, .92), rgba(8, 16, 31, .94));
+      border: 1px solid rgba(86, 240, 224, .22);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, .14);
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      animation: about-card-enter .6s ease both;
+    }
+    #about .card:nth-child(2) { animation-delay: .12s; }
+    #about .card:nth-child(3) { animation-delay: .24s; }
+    #about .card:hover {
+      transform: translateY(-5px);
+      border-color: var(--cyan);
+      box-shadow: 0 0 24px rgba(86, 240, 224, .12), 0 16px 36px rgba(0, 0, 0, .2);
+    }
+    @keyframes about-card-enter {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #about .card {
+        animation: none;
+        transition: none;
+      }
+      #about .card:hover { transform: none; }
+    }
     .card h3 { margin-top: 8px; }
     .card p, .card li { color: var(--muted); font-size: 14px; }
     .symbol { font-size: 30px; }
