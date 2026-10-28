@@ -286,6 +286,78 @@
       }
     }
 
+
+    /* NAJUA VISION MISSION SECTION */
+    .vision-mission-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      margin-top: 34px;
+    }
+
+    .vision-mission-card {
+      position: relative;
+      padding: 30px;
+      border: 1px solid rgba(86, 240, 224, .22);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(17, 34, 57, .92), rgba(8, 16, 31, .94));
+      box-shadow: 0 12px 35px rgba(0, 0, 0, .14);
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .vision-mission-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--cyan);
+      box-shadow: 0 0 24px rgba(86, 240, 224, .12), 0 16px 36px rgba(0, 0, 0, .2);
+    }
+
+    .vision-mission-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(86, 240, 224, .3);
+      border-radius: 14px;
+      background: rgba(86, 240, 224, .08);
+      color: var(--cyan);
+      font-size: 24px;
+    }
+
+    .vision-mission-card h3 {
+      margin: 0 0 12px;
+      font-size: 23px;
+      color: #fff;
+    }
+
+    .vision-mission-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    @media (max-width: 760px) {
+      .vision-mission-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .vision-mission-card {
+        padding: 24px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .vision-mission-card {
+        transition: none;
+      }
+
+      .vision-mission-card:hover {
+        transform: none;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -302,6 +374,7 @@
     <div class="navlinks">
       <a href="#about">About</a>
       <a href="#competition">Competition</a>
+      <a href="#vision-mission">Vision &amp; Mission</a>
       <a href="#community">Community</a>
       <a href="#projects">Projects</a>
       <a href="#partners">Partners</a>
@@ -331,7 +404,42 @@
     </div>
   </section>
 
-  <section class="section" id="about">
+
+  <!-- NAJUA VISION MISSION SECTION -->
+  <section class="section" id="vision-mission">
+    <div class="container">
+      <div class="eyebrow">Purpose · Progress · Possibility</div>
+      <h2 class="section-title">Building the Future, Together.</h2>
+      <p class="section-description">
+        We believe innovation begins with people who dare to learn, imagine, and create.
+        Najua Tech welcomes young talent from every background.
+      </p>
+
+      <div class="vision-mission-grid">
+        <article class="vision-mission-card">
+          <div class="vision-mission-icon" aria-hidden="true">◎</div>
+          <h3>Our Vision</h3>
+          <p>
+            To become a leading platform for youth-driven technology innovation in Tanzania,
+            inspiring and empowering the next generation of developers and innovators to
+            build solutions that shape the future.
+          </p>
+        </article>
+
+        <article class="vision-mission-card">
+          <div class="vision-mission-icon" aria-hidden="true">↗</div>
+          <h3>Our Mission</h3>
+          <p>
+            To empower young developers and innovators from all backgrounds through
+            practical challenges, collaboration, mentorship, and opportunities to
+            transform their ideas into meaningful technology solutions.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+<section class="section" id="about">
     <div class="container">
       <div class="eyebrow">Who We Are</div>
       <h2 class="section-title">Ideas deserve a platform.</h2>
@@ -421,7 +529,7 @@
   <section class="section" id="community">
     <div class="container">
       <div class="eyebrow">Beyond the Competition</div>
-      <h2 class="section-title">A community that builds together.</h2> 
+      <h2 class="section-title">A community that builds together.</h2>
       <p class="intro">
         Technology grows when people share knowledge. Our vision is to
         create a place where developers can exchange ideas, discuss
@@ -438,7 +546,7 @@
         The online discussion forum and member accounts are planned
         features and are not active yet.
       </div>
-    </div> 
+    </div>
     <div style="text-align:center; margin-top:25px;">
       <a href="members.html"
         target="_self"
@@ -452,8 +560,8 @@
             font-weight:bold;">
        Join the Community
      </a>
-    </div>   
-   
+    </div>
+
     <div style="width:100%; max-width:100%; box-sizing:border-box; margin:40px auto; color:#eaf6ff;">
      <h2 style="text-align:center; color:#32c9f4;">
       Najua Tech Discussions
@@ -530,7 +638,7 @@
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
-  
+
 <style>
   #join-najua {
     padding: 55px 20px;
