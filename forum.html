@@ -7,35 +7,58 @@
   <meta name="theme-color" content="#080d1a">
   <title>Developer Forum | Najua Tech</title>
   <style>
+
     :root {
       color-scheme: dark;
-      --bg: #080d1a;
-      --panel: #101a2d;
-      --line: #24334b;
+      --bg: #07111f;
+      --panel: #101f33;
+      --panel-raised: #14263d;
+      --reply-bg: #182b40;
+      --line: #263d59;
       --blue: #48a7ff;
-      --cyan: #56f0e0;
-      --white: #f5f8ff;
-      --muted: #a7b4ca;
+      --cyan: #00d9ff;
+      --white: #eaf4ff;
+      --muted: #9aafc8;
+      --glow: rgba(0, 217, 255, .13);
     }
 
     * { box-sizing: border-box; }
 
+    html { scroll-behavior: smooth; }
+
     body {
       margin: 0;
-      background: var(--bg);
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(27, 88, 150, .22), transparent 38rem),
+        radial-gradient(ellipse at 100% 45%, rgba(0, 217, 255, .06), transparent 34rem),
+        linear-gradient(rgba(57, 119, 172, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57, 119, 172, .045) 1px, transparent 1px),
+        var(--bg);
+      background-size: auto, auto, 36px 36px, 36px 36px, auto;
+      background-attachment: fixed;
       color: var(--white);
-      font: 16px/1.6 system-ui, sans-serif;
+      font: 16px/1.65 system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    a { color: var(--cyan); }
+    a {
+      color: var(--cyan);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    a:hover { color: #8bedff; }
 
     .wrap {
-      width: min(100% - 32px, 920px);
+      width: min(100% - 32px, 960px);
       margin: auto;
     }
 
     header {
+      position: relative;
       border-bottom: 1px solid var(--line);
+      background: rgba(7, 17, 31, .86);
+      backdrop-filter: blur(16px);
       padding: 18px 0;
     }
 
@@ -49,84 +72,140 @@
 
     .brand {
       color: var(--white);
-      font-weight: 800;
+      font-weight: 850;
       text-decoration: none;
-      letter-spacing: 1px;
+      letter-spacing: 1.8px;
+    }
+
+    .brand::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin: 0 10px 2px 0;
+      border-radius: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 14px rgba(0, 217, 255, .8);
+      transform: rotate(45deg);
     }
 
     .navlinks {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 18px;
     }
 
     .navlinks a {
+      color: var(--muted);
       text-decoration: none;
       font-size: 14px;
+      transition: color .2s ease;
     }
 
-    main { padding: 32px 0 60px; }
+    .navlinks a:hover { color: var(--cyan); }
 
-    .hero { margin-bottom: 24px; }
+    main { padding: 42px 0 68px; }
+
+    .hero {
+      margin-bottom: 28px;
+      padding: 8px 0 14px;
+    }
 
     .eyebrow {
       color: var(--cyan);
       text-transform: uppercase;
-      letter-spacing: 2px;
-      font-size: 12px;
-      font-weight: 700;
+      letter-spacing: 2.5px;
+      font-size: 11px;
+      font-weight: 800;
     }
 
-    h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.15; }
-    h2 { font-size: 21px; margin-top: 0; }
+    h1 {
+      font-size: clamp(32px, 6vw, 48px);
+      line-height: 1.12;
+      letter-spacing: -1.4px;
+      margin: 10px 0 14px;
+      text-wrap: balance;
+    }
+
+    h2 {
+      font-size: 21px;
+      letter-spacing: -.3px;
+      margin-top: 0;
+    }
+
+    h3 { color: var(--white); }
 
     .muted { color: var(--muted); }
 
     .panel {
-      background: var(--panel);
+      background: linear-gradient(145deg, rgba(20, 38, 61, .96), rgba(12, 27, 46, .97));
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 22px;
-      margin: 20px 0;
+      border-radius: 18px;
+      padding: 24px;
+      margin: 22px 0;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, .16);
     }
 
     label {
       display: block;
-      font-size: 14px;
-      margin: 14px 0 6px;
+      color: #c6d8ec;
+      font-size: 13px;
+      font-weight: 650;
+      margin: 14px 0 7px;
     }
 
     input, textarea, select {
       display: block;
       width: 100%;
-      padding: 12px;
+      padding: 12px 14px;
       color: var(--white);
-      background: var(--bg);
-      border: 1px solid var(--line);
-      border-radius: 9px;
+      background: rgba(5, 15, 28, .85);
+      border: 1px solid #2b4260;
+      border-radius: 11px;
       font: inherit;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px var(--glow);
     }
 
     textarea { min-height: 130px; resize: vertical; }
 
     button {
-      padding: 11px 16px;
-      border: 0;
-      border-radius: 9px;
-      color: #07111c;
-      background: var(--cyan);
-      font-weight: 750;
+      padding: 11px 17px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: #041421;
+      background: linear-gradient(110deg, #00d9ff, #69f4e3);
+      font: inherit;
+      font-weight: 800;
       cursor: pointer;
       margin-top: 14px;
+      box-shadow: 0 5px 20px rgba(0, 217, 255, .1);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 24px rgba(0, 217, 255, .22);
+      filter: brightness(1.05);
     }
 
     button.secondary {
-      background: #1b2b43;
+      background: #1a2c43;
       color: var(--white);
-      border: 1px solid var(--line);
+      border-color: #304966;
+      box-shadow: none;
     }
 
-    button:disabled { opacity: .6; cursor: wait; }
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+      transform: none;
+    }
 
     .row {
       display: flex;
@@ -136,22 +215,50 @@
       gap: 10px;
     }
 
+    /* Individual discussion cards */
     .post {
-      border-top: 1px solid var(--line);
-      padding: 20px 0;
+      position: relative;
+      margin: 16px 0;
+      padding: 21px 22px;
+      overflow-wrap: anywhere;
+      background: linear-gradient(135deg, rgba(17, 34, 55, .98), rgba(12, 26, 44, .98));
+      border: 1px solid #243c58;
+      border-left: 3px solid #197fa8;
+      border-radius: 14px;
+      transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
     }
 
-    .post:first-child { border-top: 0; }
+    .post:hover {
+      border-color: #31708c;
+      border-left-color: var(--cyan);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .18), 0 0 20px rgba(0, 217, 255, .045);
+      transform: translateY(-1px);
+    }
 
-    .post h3 { margin: 4px 0; font-size: 20px; }
+    .post:first-child { border-top: 1px solid #243c58; }
+
+    .post h3 {
+      display: block;
+      margin: 9px 0 10px;
+      padding-left: 12px;
+      border-left: 2px solid var(--cyan);
+      color: #f1fbff;
+      font-size: clamp(18px, 3vw, 22px);
+      line-height: 1.4;
+      letter-spacing: -.35px;
+      text-shadow: 0 0 18px rgba(0, 217, 255, .09);
+    }
 
     .tag {
       display: inline-block;
-      padding: 3px 9px;
-      border: 1px solid var(--line);
+      padding: 4px 10px;
+      border: 1px solid rgba(0, 217, 255, .3);
       border-radius: 99px;
-      color: var(--cyan);
-      font-size: 12px;
+      color: #6ceaff;
+      background: rgba(0, 217, 255, .07);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .35px;
     }
 
     .content {
@@ -159,16 +266,63 @@
       overflow-wrap: anywhere;
     }
 
-    .reply {
-      border-left: 2px solid var(--line);
-      padding: 8px 12px;
-      margin: 12px 0;
+    /* Replies are visually nested inside each discussion */
+    .replies {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background: rgba(5, 14, 26, .52);
+      border: 1px solid #233b55;
+      border-radius: 13px;
     }
 
-    .reply-form { margin-top: 12px; }
+    .replies > h4 {
+      margin: 0 0 12px;
+      color: #8feeff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .reply {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 100%;
+      margin: 12px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .reply:last-child { margin-bottom: 0; }
+
+    .reply strong {
+      color: #48cfff;
+      font-size: 13px;
+      margin: 0 0 4px 3px;
+    }
+
+    .reply .content {
+      width: fit-content;
+      max-width: 100%;
+      margin: 0;
+      padding: 6px 10px;
+      background: linear-gradient(120deg, #182b40, #132438);
+      border: 1px solid #2b425c;
+      border-left: 3px solid #48a7ff;
+      border-radius: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    .reply small { margin: 3px 0 0 3px; }
+
+    .reply-form {
+      margin-top: 15px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(49, 73, 102, .65);
+    }
 
     .status { min-height: 24px; color: var(--cyan); }
-    .error { color: #ff9b9b; }
+    .error { color: #ff9baf; }
 
     footer {
       padding: 24px 0;
@@ -176,6 +330,30 @@
       color: var(--muted);
       font-size: 13px;
     }
+
+    ::selection {
+      color: #041421;
+      background: var(--cyan);
+    }
+
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 22px, 960px); }
+      main { padding-top: 28px; }
+      .panel { padding: 17px; border-radius: 14px; }
+      .post { padding: 17px 15px; }
+      .replies { padding: 11px; }
+      .reply { padding: 10px 11px; }
+      .navlinks { gap: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -385,9 +563,26 @@ discussions…</p>
           } else {
             for (const reply of data.replies) {
               const item = makeElement("div", "reply");
-              item.appendChild(makeElement(
-                "strong", "", reply.author_name || "Member"
-              ));
+              const authorName = reply.author_name || "Member";
+              const authorLabel = makeElement("strong", "", authorName);
+              const nameColors = [
+                "#48cfff",
+                "#b8a0ff",
+                "#66e3b4",
+                "#ffc66d",
+                "#ff8f9c",
+                "#7da8ff",
+                "#e6a3ff",
+                "#b9e769"
+              ];
+
+              let nameHash = 0;
+              for (let i = 0; i < authorName.length; i++) {
+                nameHash = (nameHash * 31 + authorName.charCodeAt(i)) >>> 0;
+              }
+
+              authorLabel.style.color = nameColors[nameHash % nameColors.length];
+              item.appendChild(authorLabel);
               item.appendChild(makeElement("p", "content", reply.content 
 || ""));
               item.appendChild(makeElement(
