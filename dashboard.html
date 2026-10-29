@@ -402,6 +402,7 @@
         <p class="topbar-title">Member Workspace</p>
         <div class="topbar-actions">
           <span class="status-pill"><span class="status-dot"></span> Account active</span>
+          <a class="button" id="admin-partners-link" href="./admin-partners.html" hidden>Partnership Administration</a>
           <button class="button" id="signout" type="button">Sign out</button>
         </div>
       </header>
@@ -610,6 +611,16 @@
         document.getElementById("avatar").textContent = initial;
 
         status.textContent = "You are securely signed in.";
+
+        // Show the admin link only when the protected admin endpoint accepts this session.
+        const adminLink = document.getElementById("admin-partners-link");
+        try {
+          await apiRequest("/api/admin/partner-inquiries");
+          adminLink.hidden = false;
+        } catch (_) {
+          adminLink.hidden = true;
+        }
+
         await loadProfile();
       } catch (error) {
         status.textContent =
