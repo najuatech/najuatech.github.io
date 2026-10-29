@@ -111,12 +111,50 @@
   #join-najua textarea {
     box-sizing: border-box;
     width: 100%;
-    padding: 13px;
-    border: 1px solid #354763;
-    border-radius: 8px;
-    background: #111d33;
-    color: white;
+    padding: 14px;
+    border: 1px solid rgba(112, 177, 218, 0.28);
+    border-radius: 14px;
+    background: rgba(17, 29, 51, 0.72);
+    color: #f4f7ff;
     font: inherit;
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease,
+                background 0.25s ease;
+  }
+
+  #join-najua select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 46px;
+    cursor: pointer;
+    background-image:
+      linear-gradient(45deg, transparent 50%, #45d9ff 50%),
+      linear-gradient(135deg, #45d9ff 50%, transparent 50%),
+      linear-gradient(180deg, rgba(69, 217, 255, 0.07), transparent);
+    background-position:
+      calc(100% - 21px) 50%,
+      calc(100% - 15px) 50%,
+      0 0;
+    background-size: 6px 6px, 6px 6px, 100% 100%;
+    background-repeat: no-repeat;
+  }
+
+  #join-najua select option {
+    background: #111d33;
+    color: #f4f7ff;
+  }
+
+  #join-najua input:focus,
+  #join-najua select:focus,
+  #join-najua textarea:focus {
+    outline: none;
+    border-color: #45d9ff;
+    background-color: rgba(24, 43, 69, 0.92);
+    box-shadow:
+      0 0 0 3px rgba(69, 217, 255, 0.13),
+      0 0 22px rgba(69, 217, 255, 0.10),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   #join-najua input[type="checkbox"] {
@@ -223,7 +261,7 @@
       </label>
 
       <button id="najua-submit" type="submit">
-        Submit Expression of Interest
+        Submit Application
       </button>
 
       <p id="join-status" role="status"
@@ -284,7 +322,7 @@
     } finally {
       najuaButton.disabled = false;
       najuaButton.textContent =
-        "Submit Expression of Interest";
+        "Submit Application";
     }
   });
 </script>
