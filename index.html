@@ -402,7 +402,9 @@
       <a href="#community">Community</a>
       <a href="#projects">Projects</a>
       <a href="#partners">Partners</a>
-      <a href="login.html" class="signin-link">Sign In</a>
+      <a href="login.html" class="signin-link" id="signin-link">Sign In</a>
+      <a href="dashboard.html" class="signin-link" id="member-greeting" hidden></a>
+      <a href="#" class="signin-link" id="home-signout" hidden>Sign Out</a>
     </div>
   </nav>
 </header>
@@ -723,6 +725,66 @@
 
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
+
+  const API = "https://najua-auth-app.najuatech.workers.dev";
+  const signInLink = document.getElementById("signin-link");
+  const memberGreeting = document.getElementById("member-greeting");
+  const homeSignout = document.getElementById("home-signout");
+
+  function showSignedOut() {
+    signInLink.hidden = false;
+    memberGreeting.hidden = true;
+    homeSignout.hidden = true;
+  }
+
+  function showSignedIn(user) {
+    signInLink.hidden = true;
+    memberGreeting.textContent = "Hi, " + (user.name || user.email || "Member");
+    memberGreeting.hidden = false;
+    homeSignout.hidden = false;
+  }
+
+  async function checkHomepageSession() {
+    try {
+      const response = await fetch(API + "/api/auth/get-session", {
+        credentials: "include"
+      });
+      if (!response.ok) {
+        showSignedOut();
+        return;
+      }
+      const data = await response.json();
+      if (data.user) showSignedIn(data.user);
+      else showSignedOut();
+    } catch (_) {
+      showSignedOut();
+    }
+  }
+
+  homeSignout.addEventListener("click", async (event) => {
+    event.preventDefault();
+    homeSignout.textContent = "Signing out...";
+
+    try {
+      const response = await fetch(API + "/api/auth/sign-out", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      });
+
+      if (!response.ok) {
+        throw new Error("Sign-out request failed.");
+      }
+
+      showSignedOut();
+    } catch (_) {
+      homeSignout.textContent = "Sign Out";
+      alert("We couldn't sign you out. Please try again.");
+    }
+  });
+
+  checkHomepageSession();
 </script>
 
 
