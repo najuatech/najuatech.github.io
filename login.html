@@ -301,7 +301,7 @@
         passwordInput.value = "";
 
         if (data.user) {
-          window.location.href = "./members.html";
+          window.location.href = "./dashboard.html";
         } else {
           showStatus("Signed in, but account details were not returned.");
         }
@@ -334,7 +334,9 @@
   async function checkSession() {
     try {
       const data = await request("/api/auth/get-session");
-      if (data.user) showMember(data.user);
+      if (data.user) {
+        window.location.replace("./dashboard.html");
+      }
     } catch (_) {
       // If there is no active session, keep the login form visible.
     }
