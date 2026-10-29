@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d1a">
+  <meta name="description" content="Partner with Najua Tech to support technology, education, and young innovators in Tanzania.">
+  <title>Become a Partner | Najua Tech</title>
+  <style>
+    :root {
+      --bg:#080d1a; --panel:#101a2d; --blue:#48a7ff;
+      --cyan:#56f0e0; --white:#f5f8ff; --muted:#a7b4ca;
+      --line:#24334b; --error:#ff9292;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; background:var(--bg); color:var(--white);
+      font:16px/1.7 Arial,Helvetica,sans-serif;
+    }
+    a { color:inherit; text-decoration:none; }
+    .container { width:min(900px,92%); margin:auto; }
+    header { border-bottom:1px solid var(--line); background:#080d1af5; }
+    nav {
+      min-height:76px; display:flex; align-items:center;
+      justify-content:space-between; gap:16px;
+    }
+    .logo { font-size:22px; font-weight:900; letter-spacing:1px; }
+    .logo span { color:var(--cyan); }
+    .back { color:var(--muted); font-size:14px; }
+    main { padding:54px 0 70px; }
+    .eyebrow {
+      color:var(--cyan); font-size:12px; letter-spacing:3px;
+      font-weight:bold; text-transform:uppercase;
+    }
+    h1 { font-size:clamp(36px,7vw,58px); line-height:1.1; margin:14px 0; }
+    h1 span {
+      background:linear-gradient(90deg,var(--cyan),var(--blue));
+      color:transparent; background-clip:text; -webkit-background-clip:text;
+    }
+    .intro { max-width:680px; color:var(--muted); margin-bottom:30px; }
+    .panel {
+      background:linear-gradient(145deg,#101a2d,#0c1425);
+      border:1px solid var(--line); border-radius:20px;
+      padding:clamp(20px,5vw,38px);
+      box-shadow:0 20px 70px #0003;
+    }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .field { display:flex; flex-direction:column; gap:7px; }
+    .wide { grid-column:1/-1; }
+    label { font-size:14px; font-weight:700; }
+    input,select,textarea {
+      width:100%; border:1px solid #30415e; border-radius:10px;
+      background:#080f1e; color:var(--white); padding:13px 14px;
+      font:inherit; outline:none;
+    }
+    input:focus,select:focus,textarea:focus {
+      border-color:var(--cyan); box-shadow:0 0 0 3px #56f0e01c;
+    }
+    textarea { min-height:125px; resize:vertical; }
+    .hint { color:var(--muted); font-size:13px; margin:0; }
+    .consent { display:flex; align-items:flex-start; gap:10px; margin:22px 0; }
+    .consent input { width:18px; height:18px; margin-top:5px; flex-shrink:0; }
+    .consent label { color:var(--muted); font-weight:400; font-size:14px; }
+    button {
+      border:0; border-radius:10px; padding:14px 22px;
+      background:linear-gradient(100deg,var(--cyan),var(--blue));
+      color:#07111e; font-weight:800; font-size:15px; cursor:pointer;
+    }
+    button:disabled { opacity:.6; cursor:wait; }
+    .status { margin:16px 0 0; font-size:14px; overflow-wrap:anywhere; }
+    .status.error { color:var(--error); }
+    .status.success { color:var(--cyan); }
+    footer { border-top:1px solid var(--line); padding:22px 0; color:var(--muted); font-size:13px; }
+    .trap { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
+    @media(max-width:620px) {
+      .grid { grid-template-columns:1fr; }
+      .wide { grid-column:auto; }
+      main { padding-top:35px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a class="logo" href="./index.html">NAJUA <span>TECH</span></a>
+      <a class="back" href="./index.html">← Back to homepage</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="eyebrow">Build the future together</div>
+    <h1>Become a <span>Partner.</span></h1>
+    <p class="intro">
+      Help us create opportunities for young technology innovators in Tanzania.
+      Tell us about your organization and how you would like to work with Najua Tech.
+      Our team will review your inquiry.
+    </p>
+
+    <section class="panel">
+      <form id="partner-form">
+        <div class="grid">
+          <div class="field">
+            <label for="organization_name">Organization name *</label>
+            <input id="organization_name" name="organization_name" maxlength="200" required autocomplete="organization">
+          </div>
+          <div class="field">
+            <label for="contact_name">Contact person's full name *</label>
+            <input id="contact_name" name="contact_name" maxlength="150" required autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="email">Work email *</label>
+            <input id="email" name="email" type="email" maxlength="254" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="phone">Phone number *</label>
+            <input id="phone" name="phone" type="tel" maxlength="50" required autocomplete="tel">
+          </div>
+          <div class="field wide">
+            <label for="partnership_type">Partnership type *</label>
+            <select id="partnership_type" name="partnership_type" required>
+              <option value="">Choose a partnership area</option>
+              <option value="Technology">Technology</option>
+              <option value="Sponsorship">Sponsorship</option>
+              <option value="Education">Education</option>
+              <option value="Media">Media and publicity</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="field wide">
+            <label for="proposed_support">How would your organization like to support us? *</label>
+            <textarea id="proposed_support" name="proposed_support" maxlength="3000" required placeholder="For example: equipment, mentorship, funding, venues, training, or technical services."></textarea>
+          </div>
+          <div class="field wide">
+            <label for="message">Additional information (optional)</label>
+            <textarea id="message" name="message" maxlength="5000" placeholder="Tell us about your organization or any ideas you'd like to discuss."></textarea>
+          </div>
+        </div>
+
+        <div class="trap" aria-hidden="true">
+          <label for="website">Leave this field empty</label>
+          <input id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="consent">
+          <input id="consent" name="consent" type="checkbox" required>
+          <label for="consent">
+            I confirm that I am authorized to submit this inquiry on behalf of the
+            organization and agree that Najua Tech may use these details to review
+            and respond to this partnership request.
+          </label>
+        </div>
+
+        <button id="submit-button" type="submit">Submit partnership inquiry ↗</button>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">© Najua Tech — Build. Create. Innovate.</div>
+  </footer>
+
+  <script>
+    const API = "https://najua-auth-app.najuatech.workers.dev";
+    const form = document.getElementById("partner-form");
+    const button = document.getElementById("submit-button");
+    const statusBox = document.getElementById("status");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      statusBox.className = "status";
+      statusBox.textContent = "";
+      button.disabled = true;
+      button.textContent = "Submitting…";
+
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.consent = document.getElementById("consent").checked;
+
+      try {
+        const response = await fetch(API + "/api/partner-inquiries", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(result.error || result.message || "Submission failed. Please try again.");
+        }
+
+        form.reset();
+        statusBox.className = "status success";
+        statusBox.textContent = "Thank you. Your partnership inquiry has been submitted for review.";
+      } catch (error) {
+        statusBox.className = "status error";
+        statusBox.textContent = error.message || "We couldn't submit your inquiry. Please check your connection and try again.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Submit partnership inquiry ↗";
+      }
+    });
+  </script>
+</body>
+</html>
