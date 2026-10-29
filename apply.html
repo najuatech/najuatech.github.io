@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d1a">
+  <meta name="description" content="Express your interest in joining the Najua Tech developer community.">
+  <title>Apply | Najua Tech</title>
+  <style>
+    :root {
+      --bg: #080d1a; --panel: #101a2d; --blue: #48a7ff;
+      --cyan: #56f0e0; --white: #f5f8ff; --muted: #a7b4ca;
+      --line: #24334b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--white);
+      font-family: Arial, Helvetica, sans-serif; line-height: 1.7;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1100px, 90%); margin: auto; }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(8,13,26,.96); border-bottom: 1px solid var(--line);
+    }
+    nav {
+      min-height: 76px; display: flex; justify-content: space-between;
+      align-items: center; gap: 20px;
+    }
+    .logo { display: inline-flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 900; }
+    .logo-mark {
+      font-size: 43px; font-weight: 900; font-style: italic; line-height: 1;
+      background: linear-gradient(135deg, #ffffff, #7c91ad 48%, #08d9ff 70%, #1766ff);
+      color: transparent; background-clip: text; -webkit-background-clip: text;
+    }
+    .logo-name { display: flex; flex-direction: column; line-height: 1.05; }
+    .logo-main { color: #e4e9f1; letter-spacing: 1px; }
+    .logo-tech { color: #19d9ff; font-size: 13px; letter-spacing: 5px; }
+    .navlinks { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
+    .navlinks a { color: var(--muted); }
+    .navlinks a:hover { color: var(--cyan); }
+    .signin-link { border: 1px solid var(--cyan); padding: 7px 13px; border-radius: 7px; }
+    .page-intro { width: min(680px, 90%); margin: 42px auto 0; }
+    .eyebrow { color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; font-size: 12px; font-weight: bold; }
+    .page-intro h1 { margin: 8px 0; line-height: 1.2; font-size: clamp(30px, 5vw, 44px); }
+    .page-intro p { color: var(--muted); }
+    footer { border-top: 1px solid var(--line); padding: 24px 0; color: var(--muted); font-size: 14px; margin-top: 40px; }
+    @media (max-width: 650px) {
+      nav { align-items: flex-start; flex-direction: column; padding: 14px 0; }
+      .navlinks { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <nav class="container">
+    <a class="logo" href="./index.html">
+      <span class="logo-mark">N</span>
+      <span class="logo-name"><span class="logo-main">NAJUA</span><span class="logo-tech">TECH</span></span>
+    </a>
+    <div class="navlinks">
+      <a href="./index.html#about">About</a>
+      <a href="./index.html#competition">Competition</a>
+      <a href="./index.html#community">Community</a>
+      <a href="./index.html#projects">Projects</a>
+      <a href="./index.html#partners">Partners</a>
+      <a href="./login.html" class="signin-link">Sign In</a>
+    </div>
+  </nav>
+</header>
+<main>
+  <div class="page-intro">
+    <div class="eyebrow">Join the community</div>
+    <h1>Start Your Journey with Najua Tech.</h1>
+    <p>Tell us a little about yourself and the technology areas you’re interested in.</p>
+    <p>This is an expression of interest, not official competition registration. Competition dates, eligibility, and rules will be announced separately.</p>
+  </div>
+<style>
+  #join-najua {
+    padding: 55px 20px;
+    background: #0b1224;
+    color: #f4f7ff;
+    font-family: Arial, sans-serif;
+  }
+
+  #join-najua .join-wrap {
+    max-width: 680px;
+    margin: auto;
+  }
+
+  #join-najua h2 {
+    color: #45d9ff;
+    text-align: center;
+    font-size: 30px;
+  }
+
+  #join-najua .join-intro {
+    text-align: center;
+    color: #c4cde0;
+    line-height: 1.7;
+  }
+
+  #join-najua label {
+    display: block;
+    margin: 18px 0 7px;
+    font-weight: bold;
+  }
+
+  #join-najua input,
+  #join-najua select,
+  #join-najua textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #354763;
+    border-radius: 8px;
+    background: #111d33;
+    color: white;
+    font: inherit;
+  }
+
+  #join-najua input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+  }
+
+  #join-najua .consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-weight: normal;
+    line-height: 1.5;
+  }
+
+  #join-najua button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px;
+    border: 0;
+    border-radius: 8px;
+    background: #32c9f4;
+    color: #071321;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  #join-najua #join-status {
+    margin-top: 18px;
+    line-height: 1.6;
+  }
+</style>
+<section id="join-najua">
+  <div class="join-wrap">
+    <h2>Join Najua Tech</h2>
+
+    <p class="join-intro">
+      Interested in technology, coding, or innovation?
+      Express your interest in joining the Najua Tech community.
+    </p>
+
+    <p class="join-intro">
+      This is an expression of interest, not official
+      registration for the competition. Dates and rules
+      will be announced separately.
+    </p>
+
+    <form id="najua-interest-form"
+      action="https://najua-auth-app.najuatech.workers.dev/api/applications"
+      method="POST">
+<label for="najua-name">Full name *</label>
+      <input id="najua-name" type="text"
+        name="name" autocomplete="name"
+        required maxlength="100">
+
+      <label for="najua-email">Email address *</label>
+      <input id="najua-email" type="email"
+        name="email" autocomplete="email"
+        required maxlength="150">
+
+      <label for="najua-learning">
+        How are you learning technology?
+      </label>
+      <select id="najua-learning" name="learning_path">
+        <option value="">Choose an option (optional)</option>
+        <option>Self-taught</option>
+        <option>Online courses or tutorials</option>
+        <option>School, college, or university</option>
+        <option>Bootcamp or training programme</option>
+        <option>Personal projects and hands-on practice</option>
+        <option>Learning with a community or mentor</option>
+        <option>Other</option>
+      </select>
+
+      <label for="najua-interest">
+        Main area of interest *
+      </label>
+      <select id="najua-interest" name="area_of_interest"
+        required>
+        <option value="">Choose an area</option>
+        <option>Web design and development</option>
+        <option>Mobile app development</option>
+        <option>Software development</option>
+        <option>UI/UX design</option>
+        <option>Artificial intelligence</option>
+        <option>Other technology fields</option>
+      </select>
+
+      <label for="najua-message">
+        Tell us briefly about your interests (optional)
+      </label>
+      <textarea id="najua-message" name="message"
+        rows="4" maxlength="1000"></textarea>
+
+      <label class="consent">
+        <input type="checkbox" name="consent"
+          value="Agreed" required>
+        <span>
+          I agree that Najua Tech may use the information
+          I submit to contact me about its community and
+          future competition announcements.
+        </span>
+      </label>
+
+      <button id="najua-submit" type="submit">
+        Submit Expression of Interest
+      </button>
+
+      <p id="join-status" role="status"
+        aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="container">
+    <strong>NAJUA<span style="color:#56f0e0">TECH.</span></strong>
+    <br>Technology. Innovation. Community.
+    <br>© <span id="year"></span> Najua Tech. All rights reserved.
+  </div>
+</footer>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<script>
+  const najuaForm =
+    document.getElementById("najua-interest-form");
+  const najuaStatus =
+    document.getElementById("join-status");
+  const najuaButton =
+    document.getElementById("najua-submit");
+
+  najuaForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    najuaButton.disabled = true;
+    najuaButton.textContent = "Submitting...";
+    najuaStatus.textContent = "";
+
+    try {
+      const response = await fetch(najuaForm.action, {
+        method: "POST",
+        body: JSON.stringify(
+          Object.fromEntries(new FormData(najuaForm))
+        ),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        najuaStatus.textContent =
+          "Thank you! Your expression of interest has been submitted.";
+        najuaForm.reset();
+      } else {
+        najuaStatus.textContent =
+          result.error ||
+          "Submission failed. Please check your details and try again.";
+      }
+    } catch (error) {
+      najuaStatus.textContent =
+        "Could not connect. Check your internet and try again.";
+    } finally {
+      najuaButton.disabled = false;
+      najuaButton.textContent =
+        "Submit Expression of Interest";
+    }
+  });
+</script>
+</body>
+</html>
