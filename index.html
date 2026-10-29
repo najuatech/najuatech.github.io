@@ -384,6 +384,15 @@
     }
 
   </style>
+
+<style>
+  #signin-link[hidden],
+  #member-greeting[hidden],
+  #home-signout[hidden] {
+    display: none !important;
+  }
+</style>
+
 </head>
 <body>
 
@@ -739,7 +748,10 @@
 
   function showSignedIn(user) {
     signInLink.hidden = true;
-    memberGreeting.textContent = "Hi, " + (user.name || user.email || "Member");
+    const firstName = (user.name || "").trim().split(/\s+/)[0];
+    memberGreeting.textContent = "Hi, " + (
+      firstName || (user.email || "").split("@")[0] || "Member"
+    );
     memberGreeting.hidden = false;
     homeSignout.hidden = false;
   }
