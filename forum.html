@@ -218,8 +218,8 @@
     /* Individual discussion cards */
     .post {
       position: relative;
-      margin: 16px 0;
-      padding: 21px 22px;
+      margin: 9px 0;
+      padding: 13px 15px;
       overflow-wrap: anywhere;
       background: linear-gradient(135deg, rgba(17, 34, 55, .98), rgba(12, 26, 44, .98));
       border: 1px solid #243c58;
@@ -239,12 +239,12 @@
 
     .post h3 {
       display: block;
-      margin: 9px 0 10px;
-      padding-left: 12px;
+      margin: 6px 0 7px;
+      padding-left: 10px;
       border-left: 2px solid var(--cyan);
       color: #f1fbff;
-      font-size: clamp(18px, 3vw, 22px);
-      line-height: 1.4;
+      font-size: clamp(16px, 2vw, 19px);
+      line-height: 1.3;
       letter-spacing: -.35px;
       text-shadow: 0 0 18px rgba(0, 217, 255, .09);
     }
@@ -268,15 +268,15 @@
 
     /* Replies are visually nested inside each discussion */
     .replies {
-      margin-top: 20px;
-      padding: 14px 16px;
+      margin-top: 12px;
+      padding: 10px 12px;
       background: rgba(5, 14, 26, .52);
       border: 1px solid #233b55;
       border-radius: 13px;
     }
 
     .replies > h4 {
-      margin: 0 0 12px;
+      margin: 0 0 8px;
       color: #8feeff;
       font-size: 12px;
       font-weight: 800;
@@ -289,7 +289,7 @@
       flex-direction: column;
       align-items: flex-start;
       max-width: 100%;
-      margin: 12px 0;
+      margin: 8px 0;
       overflow-wrap: anywhere;
     }
 
@@ -316,8 +316,8 @@
     .reply small { margin: 3px 0 0 3px; }
 
     .reply-form {
-      margin-top: 15px;
-      padding-top: 14px;
+      margin-top: 10px;
+      padding-top: 10px;
       border-top: 1px solid rgba(49, 73, 102, .65);
     }
 
@@ -340,8 +340,9 @@
       .wrap { width: min(100% - 22px, 960px); }
       main { padding-top: 28px; }
       .panel { padding: 17px; border-radius: 14px; }
-      .post { padding: 17px 15px; }
-      .replies { padding: 11px; }
+      .post { padding: 12px 11px; margin: 8px 0; }
+      .post h3 { font-size: 17px; margin: 6px 0; }
+      .replies { padding: 9px; margin-top: 10px; }
       .reply { padding: 10px 11px; }
       .navlinks { gap: 12px; }
     }
@@ -440,6 +441,7 @@ discussions…</p>
     const publishButton = $("publishButton");
 
     let signedInUser = null;
+    const replyRefreshers = new Map();
 
     async function apiRequest(path, options = {}) {
       const response = await fetch(API + path, {
@@ -481,7 +483,7 @@ discussions…</p>
     async function checkSession() {
       try {
         const data = await apiRequest("/api/auth/get-session");
-        signedInUser = data.user || null;
+        signedInUser = data?.user || null;
 
         if (!signedInUser) {
           $("welcome").textContent =
@@ -525,9 +527,12 @@ discussions…</p>
       article.appendChild(top);
       article.appendChild(makeElement("h3", "", post.title || "Untitled discussion"));
       article.appendChild(makeElement("p", "content", post.content || ""));
-      article.appendChild(makeElement(
+      const replyCount = makeElement(
         "p", "muted", `${Number(post.reply_count) || 0} replies`
-      ));
+      );
+      replyCount.classList.add("reply-count");
+      article.dataset.postId = String(post.id);
+      article.appendChild(replyCount);
 
       const repliesBox = makeElement("div", "replies");
       const replyForm = makeElement("form", "reply-form");
@@ -549,15 +554,21 @@ discussions…</p>
       replyForm.append(replyLabel, replyButton, replyStatus);
       article.append(repliesBox, replyForm);
 
+      let repliesLoading = false;
+
       async function loadReplies() {
-        repliesBox.replaceChildren();
+        if (repliesLoading) return;
+        repliesLoading = true;
+
         try {
           const data = await apiRequest(
             `/api/forum/posts/${encodeURIComponent(post.id)}/replies`
           );
 
+          const fragment = document.createDocumentFragment();
+
           if (!data.replies || data.replies.length === 0) {
-            repliesBox.appendChild(makeElement(
+            fragment.appendChild(makeElement(
               "p", "muted", "No replies yet. Start the conversation."
             ));
           } else {
@@ -566,14 +577,8 @@ discussions…</p>
               const authorName = reply.author_name || "Member";
               const authorLabel = makeElement("strong", "", authorName);
               const nameColors = [
-                "#48cfff",
-                "#b8a0ff",
-                "#66e3b4",
-                "#ffc66d",
-                "#ff8f9c",
-                "#7da8ff",
-                "#e6a3ff",
-                "#b9e769"
+                "#48cfff", "#b8a0ff", "#66e3b4", "#ffc66d",
+                "#ff8f9c", "#7da8ff", "#e6a3ff", "#b9e769"
               ];
 
               let nameHash = 0;
@@ -583,20 +588,23 @@ discussions…</p>
 
               authorLabel.style.color = nameColors[nameHash % nameColors.length];
               item.appendChild(authorLabel);
-              item.appendChild(makeElement("p", "content", reply.content 
-|| ""));
+              item.appendChild(makeElement("p", "content", reply.content || ""));
               item.appendChild(makeElement(
                 "small", "muted", reply.created_at || ""
               ));
-              repliesBox.appendChild(item);
+              fragment.appendChild(item);
             }
           }
+
+          repliesBox.replaceChildren(fragment);
         } catch (error) {
-          repliesBox.appendChild(makeElement(
-            "p", "error", `Couldn't load replies: ${error.message}`
-          ));
+          console.error("Couldn't refresh replies:", error);
+        } finally {
+          repliesLoading = false;
         }
       }
+
+      replyRefreshers.set(String(post.id), loadReplies);
 
       replyForm.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -637,18 +645,45 @@ discussions…</p>
 
       try {
         const data = await apiRequest("/api/forum/posts");
-        postsElement.replaceChildren();
+        const posts = Array.isArray(data.posts) ? data.posts : [];
 
-        if (!Array.isArray(data.posts) || data.posts.length === 0) {
+        if (posts.length === 0) {
+          if (postsElement.children.length > 0) {
+            postsElement.replaceChildren();
+            replyRefreshers.clear();
+          }
           showStatus(feedStatus, "No discussions yet. Be the first to post.");
           return;
         }
 
-        for (const post of data.posts) {
-          postsElement.appendChild(renderPost(post));
+        const existingIds = [...postsElement.children].map(
+          article => article.dataset.postId
+        );
+        const incomingIds = posts.map(post => String(post.id));
+        const sameDiscussions =
+          existingIds.length === incomingIds.length &&
+          existingIds.every((id, index) => id === incomingIds[index]);
+
+        if (sameDiscussions) {
+          for (const post of posts) {
+            const article = [...postsElement.children].find(
+              item => item.dataset.postId === String(post.id)
+            );
+            const count = article?.querySelector(".reply-count");
+            if (count) {
+              count.textContent = `${Number(post.reply_count) || 0} replies`;
+            }
+          }
+        } else {
+          replyRefreshers.clear();
+          const fragment = document.createDocumentFragment();
+          for (const post of posts) {
+            fragment.appendChild(renderPost(post));
+          }
+          postsElement.replaceChildren(fragment);
         }
 
-        showStatus(feedStatus, `${data.posts.length} discussions loaded.`);
+        showStatus(feedStatus, `${posts.length} discussions loaded.`);
       } catch (error) {
         showStatus(feedStatus, `Couldn't load discussions: ${error.message}`, true);
       }
@@ -686,11 +721,29 @@ true);
       }
     });
 
-    $("refreshButton").addEventListener("click", () => loadPosts());
+    $("refreshButton").addEventListener("click", async () => {
+      await loadPosts();
+      await Promise.all([...replyRefreshers.values()].map(refresh => refresh()));
+    });
+
+    let polling = false;
+
+    async function refreshLiveForum() {
+      if (polling || document.hidden) return;
+      polling = true;
+
+      try {
+        await Promise.all([...replyRefreshers.values()].map(refresh => refresh()));
+        await loadPosts(false);
+      } finally {
+        polling = false;
+      }
+    }
 
     async function init() {
       await checkSession();
       await loadPosts();
+      window.setInterval(refreshLiveForum, 5000);
     }
 
     init();
