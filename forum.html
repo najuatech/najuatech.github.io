@@ -279,8 +279,8 @@
     /* Individual discussion cards */
     .post {
       position: relative;
-      margin: 9px 0;
-      padding: 13px 15px;
+      margin: 5px 0;
+      padding: 8px 10px;
       overflow-wrap: anywhere;
       background: linear-gradient(135deg, rgba(17, 34, 55, .98), rgba(12, 26, 44, .98));
       border: 1px solid #243c58;
@@ -298,14 +298,25 @@
 
     .post:first-child { border-top: 1px solid #243c58; }
 
+    .post:nth-child(even) {
+      background: linear-gradient(135deg, rgba(34, 27, 58, .98), rgba(20, 24, 48, .98));
+      border-color: #40345f;
+      border-left-color: #8566c5;
+    }
+
+    .post:nth-child(even):hover {
+      border-color: #68518f;
+      border-left-color: #a78bfa;
+    }
+
     .post h3 {
       display: block;
-      margin: 6px 0 7px;
+      margin: 4px 0 5px;
       padding-left: 10px;
       border-left: 2px solid var(--cyan);
       color: #f1fbff;
-      font-size: clamp(16px, 2vw, 19px);
-      line-height: 1.3;
+      font-size: clamp(15px, 1.7vw, 17px);
+      line-height: 1.25;
       letter-spacing: -.35px;
       text-shadow: 0 0 18px rgba(0, 217, 255, .09);
     }
@@ -329,8 +340,8 @@
 
     /* Replies are visually nested inside each discussion */
     .replies {
-      margin-top: 12px;
-      padding: 10px 12px;
+      margin-top: 6px;
+      padding: 6px 8px;
       background: rgba(5, 14, 26, .52);
       border: 1px solid #233b55;
       border-radius: 13px;
@@ -350,7 +361,7 @@
       flex-direction: column;
       align-items: flex-start;
       max-width: 100%;
-      margin: 8px 0;
+      margin: 5px 0;
       overflow-wrap: anywhere;
     }
 
@@ -358,15 +369,15 @@
 
     .reply strong {
       color: #48cfff;
-      font-size: 13px;
-      margin: 0 0 4px 3px;
+      font-size: 12px;
+      margin: 0 0 3px 3px;
     }
 
     .reply .content {
       width: fit-content;
       max-width: 100%;
       margin: 0;
-      padding: 6px 10px;
+      padding: 4px 7px;
       background: linear-gradient(120deg, #182b40, #132438);
       border: 1px solid #2b425c;
       border-left: 3px solid #48a7ff;
@@ -422,9 +433,38 @@
     }
 
 
+    .reply-preview-toggle {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 5px 9px;
+      color: #8feeff;
+      background: rgba(0, 217, 255, .06);
+      border: 1px solid rgba(0, 217, 255, .3);
+      box-shadow: none;
+      font-size: 11px;
+    }
+
+    .reply-preview-toggle:hover {
+      background: rgba(0, 217, 255, .13);
+    }
+
+    .reply-toggle-button {
+      margin: 3px 0 5px;
+      padding: 4px 10px;
+      color: #8feeff;
+      background: rgba(0, 217, 255, .06);
+      border: 1px solid rgba(0, 217, 255, .3);
+      box-shadow: none;
+      font-size: 12px;
+    }
+
+    .reply-toggle-button:hover {
+      background: rgba(0, 217, 255, .13);
+    }
+
     .reply-form {
-      margin-top: 10px;
-      padding-top: 10px;
+      margin-top: 7px;
+      padding-top: 7px;
       border-top: 1px solid rgba(49, 73, 102, .65);
     }
 
@@ -447,10 +487,10 @@
       .wrap { width: min(100% - 22px, 960px); }
       main { padding-top: 28px; }
       .panel { padding: 17px; border-radius: 14px; }
-      .post { padding: 12px 11px; margin: 8px 0; }
-      .post h3 { font-size: 17px; margin: 6px 0; }
-      .replies { padding: 9px; margin-top: 10px; }
-      .reply { padding: 10px 11px; }
+      .post { padding: 8px; margin: 5px 0; }
+      .post h3 { font-size: 16px; margin: 3px 0 4px; }
+      .replies { padding: 6px; margin-top: 6px; }
+      .reply { padding: 6px 7px; }
       .navlinks { gap: 12px; }
     }
 
@@ -509,30 +549,36 @@
     </section>
 
     <section class="panel" id="composer">
-      <h2>Start a discussion</h2>
-      <p class="muted">Share a question, idea, challenge or project.</p>
+      <button class="secondary" id="composerToggle" type="button"
+        aria-expanded="false" aria-controls="composerContent">
+        + Start Discussion
+      </button>
 
-      <form id="postForm">
-        <label for="title">Discussion title</label>
-        <input id="title" name="title" maxlength="150" required
-          placeholder="What would you like to discuss?">
+      <div id="composerContent" hidden>
+        <h2>Start a discussion</h2>
+        <p class="muted">Share a question, idea, challenge or project.</p>
 
-        <label for="category">Category</label>
-        <select id="category" name="category">
-          <option>Web Development</option>
-          <option>App Development</option>
-          <option>Software</option>
-          <option>General</option>
-        </select>
+        <form id="postForm">
+          <label for="title">Discussion title</label>
+          <input id="title" name="title" maxlength="150" required
+            placeholder="What would you like to discuss?">
 
-        <label for="content">Your message</label>
-        <textarea id="content" name="content" maxlength="10000"
-          required placeholder="Explain your question or 
-idea…"></textarea>
+          <label for="category">Category</label>
+          <select id="category" name="category">
+            <option>Web Development</option>
+            <option>App Development</option>
+            <option>Software</option>
+            <option>General</option>
+          </select>
 
-        <button id="publishButton" type="submit">Publish 
-discussion</button>
-      </form>
+          <label for="content">Your message</label>
+          <textarea id="content" name="content" maxlength="10000"
+            required placeholder="Explain your question or idea…"></textarea>
+
+          <button id="publishButton" type="submit">Publish discussion</button>
+        </form>
+      </div>
+
       <p id="composerStatus" class="status" role="status"></p>
     </section>
 
@@ -567,6 +613,20 @@ discussions…</p>
     const feedStatus = $("feedStatus");
     const composerStatus = $("composerStatus");
     const publishButton = $("publishButton");
+    const composerToggle = $("composerToggle");
+    const composerContent = $("composerContent");
+
+    composerToggle.addEventListener("click", () => {
+      composerContent.hidden = !composerContent.hidden;
+      composerToggle.textContent = composerContent.hidden
+        ? "+ Start Discussion"
+        : "Cancel";
+      composerToggle.setAttribute(
+        "aria-expanded", String(!composerContent.hidden)
+      );
+
+      if (!composerContent.hidden) $("title").focus();
+    });
 
     let signedInUser = null;
     let isForumAdmin = false;
@@ -863,9 +923,30 @@ discussions…</p>
       replyStatus.setAttribute("role", "status");
 
       replyForm.append(replyLabel, replyButton, replyStatus);
-      article.append(repliesBox, replyForm);
+      replyForm.hidden = true;
+
+      const replyToggleButton = makeElement(
+        "button", "reply-toggle-button", "Reply"
+      );
+      replyToggleButton.type = "button";
+      replyToggleButton.disabled = !signedInUser;
+      replyToggleButton.setAttribute("aria-expanded", "false");
+
+      replyToggleButton.addEventListener("click", () => {
+        replyForm.hidden = !replyForm.hidden;
+        replyToggleButton.textContent = replyForm.hidden ? "Reply" : "Cancel";
+        replyToggleButton.setAttribute(
+          "aria-expanded", String(!replyForm.hidden)
+        );
+
+        if (!replyForm.hidden) replyInput.focus();
+      });
+
+      article.append(repliesBox, replyToggleButton, replyForm);
 
       let repliesLoading = false;
+      let showAllReplies = false;
+      const replyPreviewLimit = 2;
 
       async function loadReplies() {
         if (repliesLoading) return;
@@ -901,7 +982,9 @@ discussions…</p>
               "p", "muted", "No replies yet. Start the conversation."
             ));
           } else {
-            for (const reply of replies) {
+            for (const [replyIndex, reply] of replies.entries()) {
+              if (!showAllReplies && replyIndex >= replyPreviewLimit) continue;
+
               const item = makeElement("div", "reply");
               const authorName = reply.author_name || "Member";
               const authorLabel = makeElement("strong", "", authorName);
@@ -961,6 +1044,25 @@ discussions…</p>
 
               fragment.appendChild(item);
             }
+
+            if (replies.length > replyPreviewLimit) {
+              const remaining = replies.length - replyPreviewLimit;
+              const toggleButton = makeElement(
+                "button",
+                "reply-preview-toggle",
+                showAllReplies
+                  ? "Show fewer replies"
+                  : `View all ${replies.length} replies`
+              );
+
+              toggleButton.type = "button";
+              toggleButton.addEventListener("click", () => {
+                showAllReplies = !showAllReplies;
+                loadReplies();
+              });
+
+              fragment.appendChild(toggleButton);
+            }
           }
 
           repliesBox.replaceChildren(fragment);
@@ -993,6 +1095,9 @@ discussions…</p>
           );
 
           replyInput.value = "";
+          replyForm.hidden = true;
+          replyToggleButton.textContent = "Reply";
+          replyToggleButton.setAttribute("aria-expanded", "false");
           await loadReplies();
           showStatus(replyStatus, "Reply published.");
           await loadPosts(false);
@@ -1079,6 +1184,9 @@ true);
         });
 
         $("postForm").reset();
+        composerContent.hidden = true;
+        composerToggle.textContent = "+ Start Discussion";
+        composerToggle.setAttribute("aria-expanded", "false");
         showStatus(composerStatus, "Discussion published successfully.");
         await loadPosts();
       } catch (error) {
