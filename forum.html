@@ -391,8 +391,34 @@
       font-size: 12px;
     }
 
+    .reply {
+      position: relative;
+    }
+
     .reply button.delete-button {
-      align-self: flex-start;
+      position: absolute;
+      top: 7px;
+      right: 9px;
+      margin: 0;
+      width: 25px;
+      height: 25px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffb8c5;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-size: 20px;
+      line-height: 1;
+      box-shadow: none;
+    }
+
+    .reply button.delete-button:hover {
+      color: #ffffff;
+      background: #38232d;
+      border-color: #704252;
     }
 
 
@@ -900,8 +926,10 @@ discussions…</p>
                 signedInUser &&
                 (isForumAdmin || String(signedInUser.id) === String(reply.author_id))
               ) {
-                const deleteButton = makeElement("button", "delete-button", "Delete reply");
+                const deleteButton = makeElement("button", "delete-button", "×");
                 deleteButton.type = "button";
+                deleteButton.title = "Delete reply";
+                deleteButton.setAttribute("aria-label", "Delete reply");
 
                 deleteButton.addEventListener("click", async () => {
                   if (!window.confirm("Delete this reply? This cannot be undone.")) return;
