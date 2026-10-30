@@ -104,6 +104,67 @@
 
     .navlinks a:hover { color: var(--cyan); }
 
+    .notification-area {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    #notificationButton {
+      margin: 0;
+      padding: 8px 12px;
+      color: var(--white);
+      background: #14263d;
+      border: 1px solid #304966;
+      box-shadow: none;
+    }
+
+    #notificationCount {
+      display: inline-block;
+      min-width: 20px;
+      margin-left: 5px;
+      padding: 1px 5px;
+      border-radius: 20px;
+      color: #041421;
+      background: var(--cyan);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    #notificationPanel {
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(340px, calc(100vw - 30px));
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 14px;
+      background: #101f33;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, .4);
+    }
+
+    #notificationPanel[hidden] { display: none; }
+
+    .notification-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .notification-item:last-child { border-bottom: 0; }
+
+    .notification-item.unread {
+      color: var(--cyan);
+    }
+
+    #markNotificationsRead {
+      width: 100%;
+      margin-top: 8px;
+    }
+
     main { padding: 42px 0 68px; }
 
     .hero {
@@ -315,6 +376,26 @@
 
     .reply small { margin: 3px 0 0 3px; }
 
+    .post-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button.delete-button {
+      margin-top: 7px;
+      padding: 6px 10px;
+      color: #ffd8df;
+      background: #38232d;
+      border: 1px solid #704252;
+      box-shadow: none;
+      font-size: 12px;
+    }
+
+    .reply button.delete-button {
+      align-self: flex-start;
+    }
+
+
     .reply-form {
       margin-top: 10px;
       padding-top: 10px;
@@ -365,6 +446,27 @@
         <a href="./index.html">Home</a>
         <a href="./dashboard.html">Dashboard</a>
         <a href="./login.html" id="accountLink">Sign in</a>
+        <div class="notification-area">
+          <button class="secondary" id="notificationButton" type="button"
+            aria-expanded="false" aria-controls="notificationPanel">
+            Notifications <span id="notificationCount" hidden>0</span>
+          </button>
+          <div id="notificationPanel" hidden>
+            <strong>Notifications</strong>
+          <button class="secondary" id="enableAlerts" type="button">
+            Enable sound &amp; desktop alerts
+          </button>
+          <p id="alertStatus" class="muted" aria-live="polite">
+            Alerts are not enabled yet.
+          </p>
+            <div id="notificationList" aria-live="polite">
+              <p class="muted">No notifications yet.</p>
+            </div>
+            <button class="secondary" id="markNotificationsRead" type="button">
+              Mark all as read
+            </button>
+          </div>
+        </div>
       </div>
     </nav>
   </header>
@@ -441,7 +543,145 @@ discussions…</p>
     const publishButton = $("publishButton");
 
     let signedInUser = null;
+    let isForumAdmin = false;
     const replyRefreshers = new Map();
+    const seenReplyIds = new Map();
+    let notifications = [];
+    let alertAudio = null;
+    let alertsEnabled = false;
+    let notificationBaselineReady = false;
+
+    function renderNotifications() {
+      const list = $("notificationList");
+      const unread = notifications.filter(item => !item.read).length;
+      const count = $("notificationCount");
+
+      count.textContent = String(unread);
+      count.hidden = unread === 0;
+
+      if (!notifications.length) {
+        list.replaceChildren(makeElement("p", "muted", "No notifications yet."));
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      for (const notice of [...notifications].reverse()) {
+        const item = makeElement(
+          "div",
+          `notification-item${notice.read ? "" : " unread"}`,
+          `${notice.author} replied to "${notice.title}"`
+        );
+        fragment.appendChild(item);
+      }
+      list.replaceChildren(fragment);
+    }
+
+    function playNotificationSound() {
+      if (!alertsEnabled || !alertAudio) return;
+
+      const oscillator = alertAudio.createOscillator();
+      const gain = alertAudio.createGain();
+      const now = alertAudio.currentTime;
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(880, now);
+      oscillator.frequency.setValueAtTime(660, now + 0.16);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.16, now + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+
+      oscillator.connect(gain);
+      gain.connect(alertAudio.destination);
+      oscillator.start(now);
+      oscillator.stop(now + 0.4);
+    }
+
+    function showDesktopNotification(notice) {
+      if (!alertsEnabled || !("Notification" in window)) return;
+      if (Notification.permission !== "granted") return;
+
+      const popup = new Notification("New reply on Najua Tech", {
+        body: `${notice.author} replied to "${notice.title}"`,
+        tag: `najua-reply-${notice.id}`
+      });
+
+      popup.onclick = () => {
+        window.focus();
+        popup.close();
+      };
+    }
+
+    $("enableAlerts").addEventListener("click", async () => {
+      const status = $("alertStatus");
+      const button = $("enableAlerts");
+
+      try {
+        const AudioContextClass =
+          window.AudioContext || window.webkitAudioContext;
+
+        if (AudioContextClass) {
+          if (!alertAudio) alertAudio = new AudioContextClass();
+          await alertAudio.resume();
+          alertsEnabled = true;
+          playNotificationSound();
+        }
+
+        let permission = "unsupported";
+        if ("Notification" in window) {
+          permission = Notification.permission;
+          if (permission === "default") {
+            permission = await Notification.requestPermission();
+          }
+        }
+
+        if (permission === "granted" && alertsEnabled) {
+          status.textContent = "Sound and desktop alerts are enabled.";
+        } else if (permission === "granted") {
+          status.textContent = "Desktop alerts enabled; sound is unavailable.";
+        } else if (alertsEnabled) {
+          status.textContent = "Sound enabled; desktop alerts were not allowed.";
+        } else {
+          status.textContent = "Alerts are unavailable or permission was denied.";
+        }
+
+        button.textContent = "Alert settings enabled";
+      } catch (error) {
+        status.textContent = "Could not enable alerts. Check browser permissions.";
+        console.error("Alert setup failed:", error);
+      }
+    });
+
+    function addReplyNotification(reply, post) {
+      if (!signedInUser?.id || !post.author_id) return;
+      if (String(post.author_id) !== String(signedInUser.id)) return;
+      if (String(reply.author_id) === String(signedInUser.id)) return;
+      if (notifications.some(item => String(item.id) === String(reply.id))) return;
+
+      const notice = {
+        id: reply.id,
+        author: reply.author_name || "A member",
+        title: post.title || "your discussion",
+        read: false
+      };
+
+      notifications.push(notice);
+      notifications = notifications.slice(-30);
+      renderNotifications();
+
+      playNotificationSound();
+      showDesktopNotification(notice);
+    }
+
+    $("notificationButton").addEventListener("click", () => {
+      const panel = $("notificationPanel");
+      panel.hidden = !panel.hidden;
+      $("notificationButton").setAttribute("aria-expanded", String(!panel.hidden));
+    });
+
+    $("markNotificationsRead").addEventListener("click", () => {
+      notifications = notifications.map(item => ({ ...item, read: true }));
+      renderNotifications();
+    });
 
     async function apiRequest(path, options = {}) {
       const response = await fetch(API + path, {
@@ -484,6 +724,17 @@ discussions…</p>
       try {
         const data = await apiRequest("/api/auth/get-session");
         signedInUser = data?.user || null;
+        isForumAdmin = false;
+
+        if (signedInUser) {
+          try {
+            const permissions = await apiRequest("/api/forum/permissions");
+            isForumAdmin = permissions?.isAdmin === true;
+          } catch (permissionError) {
+            console.warn("Could not check forum permissions:", permissionError);
+          }
+        }
+
 
         if (!signedInUser) {
           $("welcome").textContent =
@@ -532,7 +783,41 @@ discussions…</p>
       );
       replyCount.classList.add("reply-count");
       article.dataset.postId = String(post.id);
+      article.dataset.authorId = String(post.author_id || "");
       article.appendChild(replyCount);
+
+      if (
+        signedInUser &&
+        (isForumAdmin || String(signedInUser.id) === String(post.author_id))
+      ) {
+        const actions = makeElement("div", "post-actions");
+        const deleteButton = makeElement("button", "delete-button", "Delete discussion");
+        deleteButton.type = "button";
+
+        deleteButton.addEventListener("click", async () => {
+          if (!window.confirm("Delete this discussion and all its replies? This cannot be undone.")) return;
+
+          deleteButton.disabled = true;
+          try {
+            await apiRequest(
+              `/api/forum/posts/${encodeURIComponent(post.id)}`,
+              { method: "DELETE" }
+            );
+
+            replyRefreshers.delete(String(post.id));
+            seenReplyIds.delete(String(post.id));
+            article.remove();
+            await loadPosts(false);
+            showStatus(feedStatus, "Discussion deleted.");
+          } catch (error) {
+            window.alert(error.message);
+            deleteButton.disabled = false;
+          }
+        });
+
+        actions.appendChild(deleteButton);
+        article.appendChild(actions);
+      }
 
       const repliesBox = makeElement("div", "replies");
       const replyForm = makeElement("form", "reply-form");
@@ -565,14 +850,32 @@ discussions…</p>
             `/api/forum/posts/${encodeURIComponent(post.id)}/replies`
           );
 
+          const replies = Array.isArray(data.replies) ? data.replies : [];
+          const knownIds = seenReplyIds.get(String(post.id));
+
+          if (!knownIds) {
+            seenReplyIds.set(
+              String(post.id),
+              new Set(replies.map(reply => String(reply.id)))
+            );
+          } else {
+            for (const reply of replies) {
+              const replyId = String(reply.id);
+              if (!knownIds.has(replyId)) {
+                addReplyNotification(reply, post);
+                knownIds.add(replyId);
+              }
+            }
+          }
+
           const fragment = document.createDocumentFragment();
 
-          if (!data.replies || data.replies.length === 0) {
+          if (replies.length === 0) {
             fragment.appendChild(makeElement(
               "p", "muted", "No replies yet. Start the conversation."
             ));
           } else {
-            for (const reply of data.replies) {
+            for (const reply of replies) {
               const item = makeElement("div", "reply");
               const authorName = reply.author_name || "Member";
               const authorLabel = makeElement("strong", "", authorName);
@@ -592,6 +895,42 @@ discussions…</p>
               item.appendChild(makeElement(
                 "small", "muted", reply.created_at || ""
               ));
+
+              if (
+                signedInUser &&
+                (isForumAdmin || String(signedInUser.id) === String(reply.author_id))
+              ) {
+                const deleteButton = makeElement("button", "delete-button", "Delete reply");
+                deleteButton.type = "button";
+
+                deleteButton.addEventListener("click", async () => {
+                  if (!window.confirm("Delete this reply? This cannot be undone.")) return;
+
+                  deleteButton.disabled = true;
+                  try {
+                    await apiRequest(
+                      `/api/forum/replies/${encodeURIComponent(reply.id)}`,
+                      { method: "DELETE" }
+                    );
+
+                    const known = seenReplyIds.get(String(post.id));
+                    known?.delete(String(reply.id));
+                    notifications = notifications.filter(
+                      notice => String(notice.id) !== String(reply.id)
+                    );
+                    renderNotifications();
+
+                    await loadReplies();
+                    await loadPosts(false);
+                  } catch (error) {
+                    window.alert(error.message);
+                    deleteButton.disabled = false;
+                  }
+                });
+
+                item.appendChild(deleteButton);
+              }
+
               fragment.appendChild(item);
             }
           }
@@ -743,6 +1082,8 @@ true);
     async function init() {
       await checkSession();
       await loadPosts();
+      notificationBaselineReady = true;
+      renderNotifications();
       window.setInterval(refreshLiveForum, 5000);
     }
 
