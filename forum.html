@@ -656,7 +656,58 @@ discussions…</p>
     let alertAudio = null;
     let alertsEnabled = false;
 
+    function notificationStorageKey() {
+      if (!signedInUser?.id) return null;
+      return `najua-tech-notifications:${String(signedInUser.id)}`;
+    }
+
+    function loadNotifications() {
+      notifications = [];
+      const key = notificationStorageKey();
+      if (!key) return;
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) || "[]");
+
+        if (Array.isArray(saved)) {
+          notifications = saved
+            .filter(notice =>
+              notice &&
+              (typeof notice.id === "string" ||
+                typeof notice.id === "number") &&
+              typeof notice.author === "string" &&
+              typeof notice.title === "string"
+            )
+            .map(notice => ({
+              id: String(notice.id),
+              author: notice.author,
+              title: notice.title,
+              read: notice.read === true
+            }))
+            .slice(-30);
+        }
+      } catch (error) {
+        console.warn("Could not load saved notifications:", error);
+        notifications = [];
+      }
+    }
+
+    function saveNotifications() {
+      const key = notificationStorageKey();
+      if (!key) return;
+
+      try {
+        localStorage.setItem(
+          key,
+          JSON.stringify(notifications.slice(-30))
+        );
+      } catch (error) {
+        console.warn("Could not save notifications:", error);
+      }
+    }
+
     function renderNotifications() {
+      saveNotifications();
       const list = $("notificationList");
       const unread = notifications.filter(item => !item.read).length;
       const count = $("notificationCount");
@@ -1245,6 +1296,7 @@ true);
 
     async function init() {
       await checkSession();
+      loadNotifications();
       await loadPosts();
       renderNotifications();
       window.setInterval(refreshLiveForum, 5000);
