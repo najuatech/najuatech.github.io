@@ -1,0 +1,1269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d1a">
+  <link rel="manifest" href="/forum/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/forum/icons/icon-512.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Developer Forum | Najua Tech</title>
+  <style>
+
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #101f33;
+      --panel-raised: #14263d;
+      --reply-bg: #182b40;
+      --line: #263d59;
+      --blue: #48a7ff;
+      --cyan: #00d9ff;
+      --white: #eaf4ff;
+      --muted: #9aafc8;
+      --glow: rgba(0, 217, 255, .13);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(27, 88, 150, .22), transparent 38rem),
+        radial-gradient(ellipse at 100% 45%, rgba(0, 217, 255, .06), transparent 34rem),
+        linear-gradient(rgba(57, 119, 172, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57, 119, 172, .045) 1px, transparent 1px),
+        var(--bg);
+      background-size: auto, auto, 36px 36px, 36px 36px, auto;
+      background-attachment: fixed;
+      color: var(--white);
+      font: 16px/1.65 system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    a {
+      color: var(--cyan);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    a:hover { color: #8bedff; }
+
+    .wrap {
+      width: min(100% - 32px, 960px);
+      margin: auto;
+    }
+
+    header {
+      position: relative;
+      border-bottom: 1px solid var(--line);
+      background: rgba(7, 17, 31, .86);
+      backdrop-filter: blur(16px);
+      padding: 18px 0;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      color: var(--white);
+      font-weight: 850;
+      text-decoration: none;
+      letter-spacing: 1.8px;
+    }
+
+    .brand::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin: 0 10px 2px 0;
+      border-radius: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 14px rgba(0, 217, 255, .8);
+      transform: rotate(45deg);
+    }
+
+    .navlinks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .navlinks a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color .2s ease;
+    }
+
+    .navlinks a:hover { color: var(--cyan); }
+
+    .notification-area {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    #notificationButton {
+      margin: 0;
+      padding: 8px 12px;
+      color: var(--white);
+      background: #14263d;
+      border: 1px solid #304966;
+      box-shadow: none;
+    }
+
+    #notificationCount {
+      display: inline-block;
+      min-width: 20px;
+      margin-left: 5px;
+      padding: 1px 5px;
+      border-radius: 20px;
+      color: #041421;
+      background: var(--cyan);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    #notificationPanel {
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(340px, calc(100vw - 30px));
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 14px;
+      background: #101f33;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, .4);
+    }
+
+    #notificationPanel[hidden] { display: none; }
+
+    .notification-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .notification-item:last-child { border-bottom: 0; }
+
+    .notification-item.unread {
+      color: var(--cyan);
+    }
+
+    #markNotificationsRead {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    main { padding: 42px 0 68px; }
+
+    .hero {
+      margin-bottom: 28px;
+      padding: 8px 0 14px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    h1 {
+      font-size: clamp(32px, 6vw, 48px);
+      line-height: 1.12;
+      letter-spacing: -1.4px;
+      margin: 10px 0 14px;
+      text-wrap: balance;
+    }
+
+    h2 {
+      font-size: 21px;
+      letter-spacing: -.3px;
+      margin-top: 0;
+    }
+
+    h3 { color: var(--white); }
+
+    .muted { color: var(--muted); }
+
+    .panel {
+      background: linear-gradient(145deg, rgba(20, 38, 61, .96), rgba(12, 27, 46, .97));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px;
+      margin: 22px 0;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, .16);
+    }
+
+    label {
+      display: block;
+      color: #c6d8ec;
+      font-size: 13px;
+      font-weight: 650;
+      margin: 14px 0 7px;
+    }
+
+    input, textarea, select {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      color: var(--white);
+      background: rgba(5, 15, 28, .85);
+      border: 1px solid #2b4260;
+      border-radius: 11px;
+      font: inherit;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    textarea { min-height: 130px; resize: vertical; }
+
+    button {
+      padding: 11px 17px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: #041421;
+      background: linear-gradient(110deg, #00d9ff, #69f4e3);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 14px;
+      box-shadow: 0 5px 20px rgba(0, 217, 255, .1);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 24px rgba(0, 217, 255, .22);
+      filter: brightness(1.05);
+    }
+
+    button.secondary {
+      background: #1a2c43;
+      color: var(--white);
+      border-color: #304966;
+      box-shadow: none;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+      transform: none;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* Individual discussion cards */
+    .post {
+      position: relative;
+      margin: 3px 0;
+      padding: 6px 9px;
+      overflow-wrap: anywhere;
+      background: linear-gradient(135deg, rgba(17, 34, 55, .98), rgba(12, 26, 44, .98));
+      border: 1px solid #243c58;
+      border-left: 3px solid #197fa8;
+      border-radius: 14px;
+      transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+
+    .post:hover {
+      border-color: #31708c;
+      border-left-color: var(--cyan);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .18), 0 0 20px rgba(0, 217, 255, .045);
+      transform: translateY(-1px);
+    }
+
+    .post:first-child { border-top: 1px solid #243c58; }
+
+    .post:nth-child(even) {
+      background: linear-gradient(135deg, rgba(34, 27, 58, .98), rgba(20, 24, 48, .98));
+      border-color: #40345f;
+      border-left-color: #8566c5;
+    }
+
+    .post:nth-child(even):hover {
+      border-color: #68518f;
+      border-left-color: #a78bfa;
+    }
+
+    .post h3 {
+      display: block;
+      margin: 3px 0 3px;
+      padding-left: 10px;
+      border-left: 2px solid var(--cyan);
+      color: #f1fbff;
+      font-size: clamp(14px, 1.5vw, 16px);
+      line-height: 1.3;
+      letter-spacing: -.35px;
+      text-shadow: 0 0 18px rgba(0, 217, 255, .09);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border: 1px solid rgba(0, 217, 255, .3);
+      border-radius: 99px;
+      color: #6ceaff;
+      background: rgba(0, 217, 255, .07);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .35px;
+    }
+
+    .content {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+      line-height: 1.4;
+      margin: 2px 0;
+    }
+
+    .post > .row {
+      gap: 5px 8px;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .post .tag {
+      padding: 2px 7px;
+      font-size: 10px;
+    }
+
+    .post .reply-count {
+      margin: 3px 0;
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    /* Replies are visually nested inside each discussion */
+    .replies {
+      margin-top: 4px;
+      padding: 5px 7px;
+      background: rgba(5, 14, 26, .52);
+      border: 1px solid #233b55;
+      border-radius: 13px;
+    }
+
+    .replies > h4 {
+      margin: 0 0 8px;
+      color: #8feeff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .reply {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 100%;
+      margin: 5px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .reply:last-child { margin-bottom: 0; }
+
+    .reply strong {
+      color: #48cfff;
+      font-size: 12px;
+      margin: 0 0 3px 3px;
+    }
+
+    .reply .content {
+      width: fit-content;
+      max-width: 100%;
+      margin: 0;
+      padding: 4px 7px;
+      background: linear-gradient(120deg, #182b40, #132438);
+      border: 1px solid #2b425c;
+      border-left: 3px solid #48a7ff;
+      border-radius: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    .reply small { margin: 3px 0 0 3px; }
+
+    .post-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button.delete-button {
+      margin-top: 7px;
+      padding: 6px 10px;
+      color: #ffd8df;
+      background: #38232d;
+      border: 1px solid #704252;
+      box-shadow: none;
+      font-size: 12px;
+    }
+
+    .reply {
+      position: relative;
+    }
+
+    .reply button.delete-button {
+      position: absolute;
+      top: 7px;
+      right: 9px;
+      margin: 0;
+      width: 25px;
+      height: 25px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffb8c5;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-size: 20px;
+      line-height: 1;
+      box-shadow: none;
+    }
+
+    .reply button.delete-button:hover {
+      color: #ffffff;
+      background: #38232d;
+      border-color: #704252;
+    }
+
+
+    .reply-preview-toggle {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 5px 9px;
+      color: #8feeff;
+      background: rgba(0, 217, 255, .06);
+      border: 1px solid rgba(0, 217, 255, .3);
+      box-shadow: none;
+      font-size: 11px;
+    }
+
+    .reply-preview-toggle:hover {
+      background: rgba(0, 217, 255, .13);
+    }
+
+    .reply-toggle-button {
+      margin: 3px 0 5px;
+      padding: 4px 10px;
+      color: #8feeff;
+      background: rgba(0, 217, 255, .06);
+      border: 1px solid rgba(0, 217, 255, .3);
+      box-shadow: none;
+      font-size: 12px;
+    }
+
+    .reply-toggle-button:hover {
+      background: rgba(0, 217, 255, .13);
+    }
+
+    .reply-form {
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid rgba(49, 73, 102, .65);
+    }
+
+    .status { min-height: 24px; color: var(--cyan); }
+    .error { color: #ff9baf; }
+
+    footer {
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    ::selection {
+      color: #041421;
+      background: var(--cyan);
+    }
+
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 22px, 960px); }
+      main { padding-top: 28px; }
+      .panel { padding: 17px; border-radius: 14px; }
+      .post { padding: 6px 8px; margin: 3px 0; }
+      .post h3 { font-size: 15px; margin: 3px 0; }
+      .replies { padding: 6px; margin-top: 6px; }
+      .reply { padding: 6px 7px; }
+      .navlinks { gap: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="wrap">
+      <a class="brand" href="../index.html">NAJUA TECH</a>
+      <div class="navlinks">
+        <a href="../index.html">Home</a>
+        <a href="../dashboard.html">Dashboard</a>
+        <a href="../login.html" id="accountLink">Sign in</a>
+        <div class="notification-area">
+          <button class="secondary" id="notificationButton" type="button"
+            aria-expanded="false" aria-controls="notificationPanel">
+            Notifications <span id="notificationCount" hidden>0</span>
+          </button>
+          <div id="notificationPanel" hidden>
+            <strong>Notifications</strong>
+          <button class="secondary" id="enableAlerts" type="button">
+            Enable sound &amp; desktop alerts
+          </button>
+          <p id="alertStatus" class="muted" aria-live="polite">
+            Alerts are not enabled yet.
+          </p>
+            <div id="notificationList" aria-live="polite">
+              <p class="muted">No notifications yet.</p>
+            </div>
+            <button class="secondary" id="markNotificationsRead" type="button">
+              Mark all as read
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Build. Create. Innovate.</div>
+      <h1>The Developer Community</h1>
+      <p class="muted">
+        Ask questions, share what you're building, and learn together.
+        This is your space to discuss technology with other developers.
+      </p>
+      <p id="welcome" class="muted">Checking your member session…</p>
+    </section>
+
+    <section class="panel" id="composer">
+      <button class="secondary" id="composerToggle" type="button"
+        aria-expanded="false" aria-controls="composerContent">
+        + Start Discussion
+      </button>
+
+      <div id="composerContent" hidden>
+        <h2>Start a discussion</h2>
+        <p class="muted">Share a question, idea, challenge or project.</p>
+
+        <form id="postForm">
+          <label for="title">Discussion title</label>
+          <input id="title" name="title" maxlength="150" required
+            placeholder="What would you like to discuss?">
+
+          <label for="category">Category</label>
+          <select id="category" name="category">
+            <option>Web Development</option>
+            <option>App Development</option>
+            <option>Software</option>
+            <option>General</option>
+          </select>
+
+          <label for="content">Your message</label>
+          <textarea id="content" name="content" maxlength="10000"
+            required placeholder="Explain your question or idea…"></textarea>
+
+          <button id="publishButton" type="submit">Publish discussion</button>
+        </form>
+      </div>
+
+      <p id="composerStatus" class="status" role="status"></p>
+    </section>
+
+    <section class="panel">
+      <div class="row">
+        <div>
+          <h2 style="margin-bottom:0">Community discussions</h2>
+          <p class="muted" style="margin-top:4px">
+            Conversations from Najua Tech members.
+          </p>
+        </div>
+        <button class="secondary" id="refreshButton" type="button">
+          Refresh
+        </button>
+      </div>
+
+      <p id="feedStatus" class="status" role="status">Loading
+discussions…</p>
+      <div id="posts"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">© Najua Tech — Build. Create. Innovate.</div>
+  </footer>
+
+  <script>
+    const API = "https://najua-auth-app.najuatech.workers.dev";
+
+    const $ = (id) => document.getElementById(id);
+    const postsElement = $("posts");
+    const feedStatus = $("feedStatus");
+    const composerStatus = $("composerStatus");
+    const publishButton = $("publishButton");
+    const composerToggle = $("composerToggle");
+    const composerContent = $("composerContent");
+
+    composerToggle.addEventListener("click", () => {
+      composerContent.hidden = !composerContent.hidden;
+      composerToggle.textContent = composerContent.hidden
+        ? "+ Start Discussion"
+        : "Cancel";
+      composerToggle.setAttribute(
+        "aria-expanded", String(!composerContent.hidden)
+      );
+
+      if (!composerContent.hidden) $("title").focus();
+    });
+
+    let signedInUser = null;
+    let isForumAdmin = false;
+    const replyRefreshers = new Map();
+    const seenReplyIds = new Map();
+    let notifications = [];
+    let alertAudio = null;
+    let alertsEnabled = false;
+
+    function renderNotifications() {
+      const list = $("notificationList");
+      const unread = notifications.filter(item => !item.read).length;
+      const count = $("notificationCount");
+
+      count.textContent = String(unread);
+      count.hidden = unread === 0;
+
+      if (!notifications.length) {
+        list.replaceChildren(makeElement("p", "muted", "No notifications yet."));
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      for (const notice of [...notifications].reverse()) {
+        const item = makeElement(
+          "div",
+          `notification-item${notice.read ? "" : " unread"}`,
+          `${notice.author} replied to "${notice.title}"`
+        );
+        fragment.appendChild(item);
+      }
+      list.replaceChildren(fragment);
+    }
+
+    function playNotificationSound() {
+      if (!alertsEnabled || !alertAudio) return;
+
+      const oscillator = alertAudio.createOscillator();
+      const gain = alertAudio.createGain();
+      const now = alertAudio.currentTime;
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(880, now);
+      oscillator.frequency.setValueAtTime(660, now + 0.16);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.16, now + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+
+      oscillator.connect(gain);
+      gain.connect(alertAudio.destination);
+      oscillator.start(now);
+      oscillator.stop(now + 0.4);
+    }
+
+    function showDesktopNotification(notice) {
+      if (!alertsEnabled || !("Notification" in window)) return;
+      if (Notification.permission !== "granted") return;
+
+      const popup = new Notification("New reply on Najua Tech", {
+        body: `${notice.author} replied to "${notice.title}"`,
+        tag: `najua-reply-${notice.id}`
+      });
+
+      popup.onclick = () => {
+        window.focus();
+        popup.close();
+      };
+    }
+
+    $("enableAlerts").addEventListener("click", async () => {
+      const status = $("alertStatus");
+      const button = $("enableAlerts");
+
+      try {
+        const AudioContextClass =
+          window.AudioContext || window.webkitAudioContext;
+
+        if (AudioContextClass) {
+          if (!alertAudio) alertAudio = new AudioContextClass();
+          await alertAudio.resume();
+          alertsEnabled = true;
+          playNotificationSound();
+        }
+
+        let permission = "unsupported";
+        if ("Notification" in window) {
+          permission = Notification.permission;
+          if (permission === "default") {
+            permission = await Notification.requestPermission();
+          }
+        }
+
+        if (permission === "granted" && alertsEnabled) {
+          status.textContent = "Sound and desktop alerts are enabled.";
+        } else if (permission === "granted") {
+          status.textContent = "Desktop alerts enabled; sound is unavailable.";
+        } else if (alertsEnabled) {
+          status.textContent = "Sound enabled; desktop alerts were not allowed.";
+        } else {
+          status.textContent = "Alerts are unavailable or permission was denied.";
+        }
+
+        button.textContent = "Alert settings enabled";
+      } catch (error) {
+        status.textContent = "Could not enable alerts. Check browser permissions.";
+        console.error("Alert setup failed:", error);
+      }
+    });
+
+    function addReplyNotification(reply, post) {
+      if (!signedInUser?.id || !post.author_id) return;
+      if (String(post.author_id) !== String(signedInUser.id)) return;
+      if (String(reply.author_id) === String(signedInUser.id)) return;
+      if (notifications.some(item => String(item.id) === String(reply.id))) return;
+
+      const notice = {
+        id: reply.id,
+        author: reply.author_name || "A member",
+        title: post.title || "your discussion",
+        read: false
+      };
+
+      notifications.push(notice);
+      notifications = notifications.slice(-30);
+      renderNotifications();
+
+      playNotificationSound();
+      showDesktopNotification(notice);
+    }
+
+    $("notificationButton").addEventListener("click", () => {
+      const panel = $("notificationPanel");
+      panel.hidden = !panel.hidden;
+      $("notificationButton").setAttribute("aria-expanded", String(!panel.hidden));
+    });
+
+    $("markNotificationsRead").addEventListener("click", () => {
+      notifications = notifications.map(item => ({ ...item, read: true }));
+      renderNotifications();
+    });
+
+    async function apiRequest(path, options = {}) {
+      const response = await fetch(API + path, {
+        ...options,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || data.error || `Request failed
+(${response.status}).`
+        );
+      }
+
+      return data;
+    }
+
+    function makeElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+
+    function showStatus(element, message, isError = false) {
+      element.textContent = message;
+      element.classList.toggle("error", isError);
+    }
+
+    async function checkSession() {
+      try {
+        const data = await apiRequest("/api/auth/get-session");
+        signedInUser = data?.user || null;
+        isForumAdmin = false;
+
+        if (signedInUser) {
+          try {
+            const permissions = await apiRequest("/api/forum/permissions");
+            isForumAdmin = permissions?.isAdmin === true;
+          } catch (permissionError) {
+            console.warn("Could not check forum permissions:", permissionError);
+          }
+        }
+
+
+        if (!signedInUser) {
+          $("welcome").textContent =
+            "Sign in to publish discussions and reply to members.";
+          $("accountLink").textContent = "Sign in";
+          $("composer").hidden = false;
+          publishButton.disabled = true;
+          showStatus(composerStatus, "Sign in before publishing.");
+          return;
+        }
+
+        $("welcome").textContent =
+          `Signed in as ${signedInUser.name || signedInUser.email ||
+"member"}`;
+        $("accountLink").textContent = "Your account";
+        publishButton.disabled = false;
+        showStatus(composerStatus, "");
+      } catch (error) {
+        $("welcome").textContent = "We couldn't verify your session.";
+        publishButton.disabled = true;
+        showStatus(composerStatus, error.message, true);
+      }
+    }
+
+    function renderPost(post) {
+      const article = makeElement("article", "post");
+      const top = makeElement("div", "row");
+      top.appendChild(makeElement("span", "tag", post.category ||
+"General"));
+
+      const author = post.author_name || "Najua Tech member";
+      const date = post.created_at
+        ? new Date(post.created_at.replace(" ", "T") + "Z").toLocaleString()
+        : "";
+
+      top.appendChild(makeElement(
+        "span",
+        "muted",
+        `${author}${date ? " · " + date : ""}`
+      ));
+      article.appendChild(top);
+      article.appendChild(makeElement("h3", "", post.title || "Untitled discussion"));
+      article.appendChild(makeElement("p", "content", post.content || ""));
+      const replyCount = makeElement(
+        "p", "muted", `${Number(post.reply_count) || 0} replies`
+      );
+      replyCount.classList.add("reply-count");
+      article.dataset.postId = String(post.id);
+      article.dataset.authorId = String(post.author_id || "");
+      article.appendChild(replyCount);
+
+      if (
+        signedInUser &&
+        (isForumAdmin || String(signedInUser.id) === String(post.author_id))
+      ) {
+        const actions = makeElement("div", "post-actions");
+        const deleteButton = makeElement("button", "delete-button", "Delete discussion");
+        deleteButton.type = "button";
+
+        deleteButton.addEventListener("click", async () => {
+          if (!window.confirm("Delete this discussion and all its replies? This cannot be undone.")) return;
+
+          deleteButton.disabled = true;
+          try {
+            await apiRequest(
+              `/api/forum/posts/${encodeURIComponent(post.id)}`,
+              { method: "DELETE" }
+            );
+
+            replyRefreshers.delete(String(post.id));
+
+            const deletedReplyIds = seenReplyIds.get(String(post.id)) || new Set();
+
+            notifications = notifications.filter(
+              notice => !deletedReplyIds.has(String(notice.id))
+            );
+
+            seenReplyIds.delete(String(post.id));
+            renderNotifications();
+
+            article.remove();
+            await loadPosts(false);
+            showStatus(feedStatus, "Discussion deleted.");
+          } catch (error) {
+            window.alert(error.message);
+            deleteButton.disabled = false;
+          }
+        });
+
+        actions.appendChild(deleteButton);
+        article.appendChild(actions);
+      }
+
+      const repliesBox = makeElement("div", "replies");
+      const replyForm = makeElement("form", "reply-form");
+      const replyLabel = makeElement("label", "", "Write a reply");
+      const replyInput = makeElement("textarea");
+      replyInput.rows = 2;
+      replyInput.maxLength = 5000;
+      replyInput.required = true;
+      replyInput.placeholder = "Help answer or continue the discussion…";
+      replyLabel.appendChild(replyInput);
+
+      const replyButton = makeElement("button", "", "Send reply");
+      replyButton.type = "submit";
+      replyButton.disabled = !signedInUser;
+
+      const replyStatus = makeElement("p", "status");
+      replyStatus.setAttribute("role", "status");
+
+      replyForm.append(replyLabel, replyButton, replyStatus);
+      replyForm.hidden = true;
+
+      const replyToggleButton = makeElement(
+        "button", "reply-toggle-button", "Reply"
+      );
+      replyToggleButton.type = "button";
+      replyToggleButton.disabled = !signedInUser;
+      replyToggleButton.setAttribute("aria-expanded", "false");
+
+      replyToggleButton.addEventListener("click", () => {
+        replyForm.hidden = !replyForm.hidden;
+        replyToggleButton.textContent = replyForm.hidden ? "Reply" : "Cancel";
+        replyToggleButton.setAttribute(
+          "aria-expanded", String(!replyForm.hidden)
+        );
+
+        if (!replyForm.hidden) replyInput.focus();
+      });
+
+      article.append(repliesBox, replyToggleButton, replyForm);
+
+      let repliesLoading = false;
+      let showAllReplies = false;
+      const replyPreviewLimit = 2;
+
+      async function loadReplies() {
+        if (repliesLoading) return;
+        repliesLoading = true;
+
+        try {
+          const data = await apiRequest(
+            `/api/forum/posts/${encodeURIComponent(post.id)}/replies`
+          );
+
+          const replies = Array.isArray(data.replies) ? data.replies : [];
+          const knownIds = seenReplyIds.get(String(post.id));
+
+          if (!knownIds) {
+            seenReplyIds.set(
+              String(post.id),
+              new Set(replies.map(reply => String(reply.id)))
+            );
+          } else {
+            for (const reply of replies) {
+              const replyId = String(reply.id);
+              if (!knownIds.has(replyId)) {
+                addReplyNotification(reply, post);
+                knownIds.add(replyId);
+              }
+            }
+          }
+
+          const fragment = document.createDocumentFragment();
+
+          if (replies.length === 0) {
+            fragment.appendChild(makeElement(
+              "p", "muted", "No replies yet. Start the conversation."
+            ));
+          } else {
+            for (const [replyIndex, reply] of replies.entries()) {
+              if (!showAllReplies && replyIndex >= replyPreviewLimit) continue;
+
+              const item = makeElement("div", "reply");
+              const authorName = reply.author_name || "Member";
+              const authorLabel = makeElement("strong", "", authorName);
+              const nameColors = [
+                "#48cfff", "#b8a0ff", "#66e3b4", "#ffc66d",
+                "#ff8f9c", "#7da8ff", "#e6a3ff", "#b9e769"
+              ];
+
+              let nameHash = 0;
+              for (let i = 0; i < authorName.length; i++) {
+                nameHash = (nameHash * 31 + authorName.charCodeAt(i)) >>> 0;
+              }
+
+              authorLabel.style.color = nameColors[nameHash % nameColors.length];
+              item.appendChild(authorLabel);
+              item.appendChild(makeElement("p", "content", reply.content || ""));
+              item.appendChild(makeElement(
+                "small", "muted", reply.created_at || ""
+              ));
+
+              if (
+                signedInUser &&
+                (isForumAdmin || String(signedInUser.id) === String(reply.author_id))
+              ) {
+                const deleteButton = makeElement("button", "delete-button", "×");
+                deleteButton.type = "button";
+                deleteButton.title = "Delete reply";
+                deleteButton.setAttribute("aria-label", "Delete reply");
+
+                deleteButton.addEventListener("click", async () => {
+                  if (!window.confirm("Delete this reply? This cannot be undone.")) return;
+
+                  deleteButton.disabled = true;
+                  try {
+                    await apiRequest(
+                      `/api/forum/replies/${encodeURIComponent(reply.id)}`,
+                      { method: "DELETE" }
+                    );
+
+                    const known = seenReplyIds.get(String(post.id));
+                    known?.delete(String(reply.id));
+                    notifications = notifications.filter(
+                      notice => String(notice.id) !== String(reply.id)
+                    );
+                    renderNotifications();
+
+                    await loadReplies();
+                    await loadPosts(false);
+                  } catch (error) {
+                    window.alert(error.message);
+                    deleteButton.disabled = false;
+                  }
+                });
+
+                item.appendChild(deleteButton);
+              }
+
+              fragment.appendChild(item);
+            }
+
+            if (replies.length > replyPreviewLimit) {
+              const remaining = replies.length - replyPreviewLimit;
+              const toggleButton = makeElement(
+                "button",
+                "reply-preview-toggle",
+                showAllReplies
+                  ? "Show fewer replies"
+                  : `View all ${replies.length} replies`
+              );
+
+              toggleButton.type = "button";
+              toggleButton.addEventListener("click", () => {
+                showAllReplies = !showAllReplies;
+                loadReplies();
+              });
+
+              fragment.appendChild(toggleButton);
+            }
+          }
+
+          repliesBox.replaceChildren(fragment);
+        } catch (error) {
+          console.error("Couldn't refresh replies:", error);
+        } finally {
+          repliesLoading = false;
+        }
+      }
+
+      replyRefreshers.set(String(post.id), loadReplies);
+
+      replyForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!signedInUser) {
+          showStatus(replyStatus, "Sign in to reply.", true);
+          return;
+        }
+
+        replyButton.disabled = true;
+        showStatus(replyStatus, "Sending reply…");
+
+        try {
+          await apiRequest(
+            `/api/forum/posts/${encodeURIComponent(post.id)}/replies`,
+            {
+              method: "POST",
+              body: JSON.stringify({ content: replyInput.value.trim() })
+            }
+          );
+
+          replyInput.value = "";
+          replyForm.hidden = true;
+          replyToggleButton.textContent = "Reply";
+          replyToggleButton.setAttribute("aria-expanded", "false");
+          await loadReplies();
+          showStatus(replyStatus, "Reply published.");
+          await loadPosts(false);
+        } catch (error) {
+          showStatus(replyStatus, error.message, true);
+        } finally {
+          replyButton.disabled = !signedInUser;
+        }
+      });
+
+      loadReplies();
+      return article;
+    }
+
+    async function loadPosts(showLoading = true) {
+      if (showLoading) showStatus(feedStatus, "Loading discussions…");
+
+      try {
+        const data = await apiRequest("/api/forum/posts");
+        const posts = Array.isArray(data.posts) ? data.posts : [];
+
+        if (posts.length === 0) {
+          if (postsElement.children.length > 0) {
+            postsElement.replaceChildren();
+            replyRefreshers.clear();
+          }
+          showStatus(feedStatus, "No discussions yet. Be the first to post.");
+          return;
+        }
+
+        const existingIds = [...postsElement.children].map(
+          article => article.dataset.postId
+        );
+        const incomingIds = posts.map(post => String(post.id));
+        const sameDiscussions =
+          existingIds.length === incomingIds.length &&
+          existingIds.every((id, index) => id === incomingIds[index]);
+
+        if (sameDiscussions) {
+          for (const post of posts) {
+            const article = [...postsElement.children].find(
+              item => item.dataset.postId === String(post.id)
+            );
+            const count = article?.querySelector(".reply-count");
+            if (count) {
+              count.textContent = `${Number(post.reply_count) || 0} replies`;
+            }
+          }
+        } else {
+          replyRefreshers.clear();
+          const fragment = document.createDocumentFragment();
+          for (const post of posts) {
+            fragment.appendChild(renderPost(post));
+          }
+          postsElement.replaceChildren(fragment);
+        }
+
+        showStatus(feedStatus, `${posts.length} discussions loaded.`);
+      } catch (error) {
+        showStatus(feedStatus, `Couldn't load discussions: ${error.message}`, true);
+      }
+    }
+
+    $("postForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!signedInUser) {
+        showStatus(composerStatus, "Please sign in before publishing.",
+true);
+        return;
+      }
+
+      publishButton.disabled = true;
+      showStatus(composerStatus, "Publishing discussion…");
+
+      try {
+        const title = $("title").value.trim();
+        const content = $("content").value.trim();
+        const category = $("category").value;
+
+        await apiRequest("/api/forum/posts", {
+          method: "POST",
+          body: JSON.stringify({ title, content, category })
+        });
+
+        $("postForm").reset();
+        composerContent.hidden = true;
+        composerToggle.textContent = "+ Start Discussion";
+        composerToggle.setAttribute("aria-expanded", "false");
+        showStatus(composerStatus, "Discussion published successfully.");
+        await loadPosts();
+      } catch (error) {
+        showStatus(composerStatus, error.message, true);
+      } finally {
+        publishButton.disabled = !signedInUser;
+      }
+    });
+
+    $("refreshButton").addEventListener("click", async () => {
+      await loadPosts();
+      await Promise.all([...replyRefreshers.values()].map(refresh => refresh()));
+    });
+
+    let polling = false;
+
+    async function refreshLiveForum() {
+      if (polling || document.hidden) return;
+      polling = true;
+
+      try {
+        await Promise.all([...replyRefreshers.values()].map(refresh => refresh()));
+        await loadPosts(false);
+      } finally {
+        polling = false;
+      }
+    }
+
+    async function init() {
+      await checkSession();
+      await loadPosts();
+      renderNotifications();
+      window.setInterval(refreshLiveForum, 5000);
+    }
+
+    init();
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/forum/sw.js", { scope: "/forum/" })
+          .catch(error => console.error("Forum service worker registration failed:", error));
+      });
+    }
+  </script>
+
+</body>
+</html>
