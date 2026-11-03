@@ -515,6 +515,23 @@
       .replies { padding: 6px; margin-top: 6px; }
       .reply { padding: 6px 7px; }
       .navlinks { gap: 12px; }
+
+      .notification-area {
+        position: static;
+      }
+
+      #notificationPanel {
+        position: fixed;
+        top: max(90px, env(safe-area-inset-top));
+        right: 11px;
+        left: 11px;
+        width: auto;
+        max-width: 340px;
+        max-height: min(70vh, 420px);
+        box-sizing: border-box;
+        overflow-y: auto;
+        z-index: 1000;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -547,6 +564,12 @@
           </button>
           <p id="alertStatus" class="muted" aria-live="polite">
             Alerts are not enabled yet.
+          </p>
+          <button class="secondary" id="pushButton" type="button">
+            Enable push notifications
+          </button>
+          <p id="pushStatus" class="muted" aria-live="polite">
+            Sign in to manage push notifications.
           </p>
             <div id="notificationList" aria-live="polite">
               <p class="muted">No notifications yet.</p>
@@ -629,7 +652,7 @@ discussions…</p>
   </footer>
 
   <script>
-    const API = "https://najua-auth-app.najuatech.workers.dev";
+    const API = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "http" + "://" + "localhost:8787" : "https" + "://" + "najua-auth-app.najuatech.workers.dev";
 
     const $ = (id) => document.getElementById(id);
     const postsElement = $("posts");
@@ -827,6 +850,184 @@ discussions…</p>
       element.textContent = message;
       element.classList.toggle("error", isError);
     }
+
+    function decodeVapidPublicKey(value) {
+      const padded = value + "=".repeat((4 - value.length % 4) % 4);
+      const base64 = padded.replace(/-/g, "+").replace(/_/g, "/");
+      const raw = window.atob(base64);
+
+      return Uint8Array.from(raw, character => character.charCodeAt(0));
+    }
+
+    function pushIsSupported() {
+      return (
+        "serviceWorker" in navigator &&
+        "PushManager" in window &&
+        "Notification" in window
+      );
+    }
+
+    function isIOSDevice() {
+      return (
+        /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+      );
+    }
+
+    function isInstalledForumApp() {
+      return (
+        window.matchMedia("(display-mode: standalone)").matches ||
+        navigator.standalone === true
+      );
+    }
+
+    let pushSubscriptionSaved = false;
+
+    async function updatePushStatus() {
+      const button = $("pushButton");
+      const status = $("pushStatus");
+
+      pushSubscriptionSaved = false;
+
+      if (!signedInUser) {
+        button.disabled = true;
+        button.textContent = "Enable push notifications";
+        status.textContent = "Sign in to manage push notifications.";
+        return;
+      }
+
+      if (!pushIsSupported()) {
+        button.disabled = true;
+        status.textContent =
+          "This browser does not support push notifications.";
+        return;
+      }
+
+      if (isIOSDevice() && !isInstalledForumApp()) {
+        button.disabled = true;
+        status.textContent =
+          "On iPhone or iPad, add Najua Forum to your Home Screen and open the installed app to enable push notifications.";
+        return;
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+
+        if (!subscription) {
+          button.disabled = false;
+          button.textContent = "Enable push notifications";
+          status.textContent = "Push notifications are off on this device.";
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Checking subscription…";
+
+        await apiRequest("/api/push/subscribe", {
+          method: "POST",
+          body: JSON.stringify(subscription.toJSON())
+        });
+
+        pushSubscriptionSaved = true;
+        button.disabled = false;
+        button.textContent = "Disable push notifications";
+        status.textContent = "Push notifications are enabled on this device.";
+      } catch (error) {
+        pushSubscriptionSaved = false;
+        button.disabled = false;
+        button.textContent = "Retry push setup";
+        status.textContent =
+          "This device has a subscription, but it is not saved to your account yet. Tap to retry.";
+        console.error("Push status or sync failed:", error);
+      }
+    }
+
+    $("pushButton").addEventListener("click", async () => {
+      const button = $("pushButton");
+      const status = $("pushStatus");
+
+      button.disabled = true;
+      button.textContent = "Please wait…";
+      status.textContent = "Updating push notification settings…";
+
+      let failure = null;
+
+      try {
+        if (!signedInUser) {
+          throw new Error("Sign in before enabling push notifications.");
+        }
+
+        if (!pushIsSupported()) {
+          throw new Error("This browser does not support push notifications.");
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+        let subscription = await registration.pushManager.getSubscription();
+
+        if (subscription && pushSubscriptionSaved) {
+          await apiRequest("/api/push/unsubscribe", {
+            method: "POST",
+            body: JSON.stringify({ endpoint: subscription.endpoint })
+          });
+
+          const removed = await subscription.unsubscribe();
+
+          if (!removed) {
+            throw new Error(
+              "The server subscription was removed, but this browser could not unsubscribe."
+            );
+          }
+
+          pushSubscriptionSaved = false;
+        } else {
+          if (!subscription) {
+            let permission = Notification.permission;
+
+            if (permission === "default") {
+              permission = await Notification.requestPermission();
+            }
+
+            if (permission !== "granted") {
+              throw new Error(
+                "Notification permission was not granted. Check your browser or device settings."
+              );
+            }
+
+            const keyData = await apiRequest("/api/push/public-key");
+
+            if (typeof keyData.publicKey !== "string" || !keyData.publicKey) {
+              throw new Error("The push notification public key is unavailable.");
+            }
+
+            subscription = await registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: decodeVapidPublicKey(keyData.publicKey)
+            });
+          }
+
+          await apiRequest("/api/push/subscribe", {
+            method: "POST",
+            body: JSON.stringify(subscription.toJSON())
+          });
+
+          pushSubscriptionSaved = true;
+        }
+      } catch (error) {
+        failure = error;
+        console.error("Push subscription update failed:", error);
+      }
+
+      await updatePushStatus();
+
+      if (failure) {
+        status.textContent = failure.message ||
+          "Could not update push notification settings.";
+        status.classList.add("error");
+      } else {
+        status.classList.remove("error");
+      }
+    });
 
     async function checkSession() {
       try {
@@ -1248,6 +1449,7 @@ true);
 
     async function init() {
       await checkSession();
+      await updatePushStatus();
       await loadPosts();
       renderNotifications();
       window.setInterval(refreshLiveForum, 5000);
