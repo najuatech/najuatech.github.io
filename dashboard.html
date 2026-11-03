@@ -370,6 +370,179 @@
       .profile-grid { grid-template-columns: 1fr; }
       .card { padding: 19px; }
     }
+
+    /* Member project workspace */
+    .project-workspace {
+      display: grid;
+      gap: 28px;
+      margin-top: 24px;
+    }
+
+    .project-form,
+    .project-list-section {
+      min-width: 0;
+      padding: 20px;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .project-form h3,
+    .project-list-section h3 {
+      margin: 0 0 8px;
+    }
+
+    .project-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .project-field {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .project-field-full {
+      grid-column: 1 / -1;
+    }
+
+    .project-field label {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .project-field input,
+    .project-field textarea,
+    .project-field select {
+      width: 100%;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #0c1425;
+      color: var(--white);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    .project-field textarea {
+      resize: vertical;
+    }
+
+    .project-field input:focus,
+    .project-field textarea:focus,
+    .project-field select:focus {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    .project-hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .project-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 18px;
+      font-size: 13px;
+    }
+
+    .project-checkbox input {
+      margin-top: 5px;
+      accent-color: var(--cyan);
+    }
+
+    .project-form-actions,
+    .project-card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .project-list-section .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .my-projects-list {
+      display: grid;
+      gap: 13px;
+      margin-top: 16px;
+    }
+
+    .my-project-card {
+      min-width: 0;
+      padding: 16px;
+      background: #0c1425;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+    }
+
+    .my-project-card h4 {
+      margin: 0 0 7px;
+      overflow-wrap: anywhere;
+    }
+
+    .my-project-card p {
+      margin: 7px 0;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .project-status {
+      display: inline-flex;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    .project-status.approved {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .project-status.pending {
+      color: #f4cf75;
+      border-color: #806a35;
+    }
+
+    .project-status.rejected {
+      color: #ff9999;
+      border-color: #8a4848;
+    }
+
+    @media (max-width: 650px) {
+      .project-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project-field-full {
+        grid-column: auto;
+      }
+
+      .project-form,
+      .project-list-section {
+        padding: 15px;
+      }
+    }
+
+    [hidden] { display: none !important; }
+
   </style>
 </head>
 <body>
@@ -379,10 +552,10 @@
 
       <p class="nav-label">WORKSPACE</p>
       <nav class="nav" aria-label="Member navigation">
-        <a class="active" href="#overview">⌂ Overview</a>
-        <a href="#profile">♙ My profile</a>
-        <a href="#projects">▤ My projects</a>
-        <a href="#competition">🏆 Competition</a>
+        <a class="active" href="#overview" data-view="overview" aria-current="page">⌂ Overview</a>
+        <a href="#profile" data-view="profile">♙ My profile</a>
+        <a href="#projects" data-view="projects">▤ My projects</a>
+        <a href="#competition" data-view="competition">🏆 Competition</a>
         <a href="/forum/">☷ Community</a>
       </nav>
 
@@ -408,7 +581,7 @@
       </header>
 
       <main class="container" id="overview">
-        <section class="welcome">
+        <section class="welcome" id="overview-welcome">
           <p class="eyebrow">YOUR FUTURE STARTS HERE</p>
           <h1>Welcome, <span id="member-name">Member</span>!</h1>
           <p class="muted">
@@ -418,10 +591,10 @@
           <p id="status" role="status" aria-live="polite">
             Checking your account...
           </p>
-          <a class="button button-primary" href="#projects">Explore workspace →</a>
+          <a class="button button-primary" href="#projects" data-view="projects">Explore workspace →</a>
         </section>
 
-        <section class="section">
+        <section class="section" id="overview-cards">
           <div class="section-heading">
             <div>
               <h2>Your workspace</h2>
@@ -430,21 +603,21 @@
           </div>
 
           <div class="grid">
-            <a class="card feature" href="#profile">
+            <a class="card feature" href="#profile" data-view="profile">
               <div class="symbol">👤</div>
               <h3>My Profile</h3>
               <p class="muted">Review your account details and member information.</p>
               <span class="feature-link">View profile →</span>
             </a>
 
-            <a class="card feature" href="#projects">
+            <a class="card feature" href="#projects" data-view="projects">
               <div class="symbol">💻</div>
               <h3>My Projects</h3>
               <p class="muted">Get ready to organise and showcase your work.</p>
               <span class="feature-link">Explore projects →</span>
             </a>
 
-            <a class="card feature" href="#competition">
+            <a class="card feature" href="#competition" data-view="competition">
               <div class="symbol">🏆</div>
               <h3>Competition</h3>
               <p class="muted">Find competition information and application links.</p>
@@ -474,7 +647,7 @@
           </div>
         </section>
 
-        <section class="section card" id="profile">
+        <section class="section card" id="profile" hidden>
           <div class="section-heading">
             <div>
               <h2>My account</h2>
@@ -528,17 +701,125 @@
           </div>
         </section>
 
-        <section class="section card" id="projects">
+        <section class="section card" id="projects" hidden>
           <p class="eyebrow">BUILD SOMETHING GREAT</p>
           <h2>My projects</h2>
           <p class="muted">
-            Your project workspace is being prepared. The next development
-            stage will add project creation, descriptions, and submission features.
+            Share what you are building with the Najua Tech community.
+            Submitted projects are reviewed before appearing publicly.
           </p>
-          <span class="status-pill">Project tools coming soon</span>
+
+          <div class="project-workspace">
+            <div class="project-create-actions">
+              <button class="button button-primary" id="project-create"
+                type="button" aria-expanded="false" aria-controls="project-form">
+                + Submit New Project
+              </button>
+            </div>
+            <form id="project-form" class="project-form" hidden>
+              <h3 id="project-form-heading">Submit a project</h3>
+              <p class="muted small">
+                Complete the required fields. You can add links and team
+                information if they are available.
+              </p>
+
+              <div class="project-form-grid">
+                <div class="project-field project-field-full">
+                  <label for="project-title">Project title *</label>
+                  <input id="project-title" name="title" type="text"
+                    minlength="3" maxlength="90" required>
+                </div>
+
+                <div class="project-field project-field-full">
+                  <label for="project-summary">Short summary *</label>
+                  <textarea id="project-summary" name="summary"
+                    minlength="10" maxlength="240" rows="2" required></textarea>
+                </div>
+
+                <div class="project-field project-field-full">
+                  <label for="project-description">Project description *</label>
+                  <textarea id="project-description" name="description"
+                    minlength="20" maxlength="6000" rows="5" required></textarea>
+                </div>
+
+                <div class="project-field">
+                  <label for="project-category">Category *</label>
+                  <select id="project-category" name="category" required>
+                    <option value="Web Development">Web Development</option>
+                    <option value="App Development">App Development</option>
+                    <option value="Software">Software</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+
+                <div class="project-field">
+                  <label for="project-technologies">Technologies</label>
+                  <input id="project-technologies" name="technologies"
+                    type="text" placeholder="HTML, CSS, JavaScript">
+                  <span class="project-hint">Separate technologies with commas.</span>
+                </div>
+
+                <div class="project-field">
+                  <label for="project-team">Team name</label>
+                  <input id="project-team" name="team_name"
+                    type="text" maxlength="100">
+                </div>
+
+                <div class="project-field">
+                  <label for="project-image">Project image URL</label>
+                  <input id="project-image" name="image_url"
+                    type="url" placeholder="https://...">
+                </div>
+
+                <div class="project-field">
+                  <label for="project-demo">Live demo URL</label>
+                  <input id="project-demo" name="demo_url"
+                    type="url" placeholder="https://...">
+                </div>
+
+                <div class="project-field">
+                  <label for="project-repository">Repository URL</label>
+                  <input id="project-repository" name="repository_url"
+                    type="url" placeholder="https://...">
+                </div>
+              </div>
+
+              <label class="project-checkbox">
+                <input id="project-competition" name="is_competition"
+                  type="checkbox">
+                <span>This project is part of the Najua Tech Competition.</span>
+              </label>
+
+              <p class="project-hint">
+                Image uploads are not enabled yet. You can provide an HTTPS image link instead.
+              </p>
+
+              <div class="project-form-actions">
+                <button class="button button-primary" id="project-submit"
+                  type="submit">Submit project for review</button>
+                <button class="button" id="project-cancel-edit"
+                  type="button" hidden>Cancel editing</button>
+              </div>
+
+              <p id="project-form-status" class="muted small"
+                role="status" aria-live="polite"></p>
+            </form>
+
+            <div class="project-list-section">
+              <div class="section-heading">
+                <h3>Your submitted projects</h3>
+                <button class="button" id="project-refresh" type="button">
+                  Refresh
+                </button>
+              </div>
+              <p id="my-projects-status" class="muted small"
+                role="status" aria-live="polite">Loading your projects...</p>
+              <div id="my-projects-list" class="my-projects-list"></div>
+            </div>
+          </div>
         </section>
 
-        <section class="section card" id="competition">
+        <section class="section card" id="competition" hidden>
           <p class="eyebrow">YOUR NEXT OPPORTUNITY</p>
           <h2>Najua Tech Competition</h2>
           <p class="muted">
@@ -562,7 +843,12 @@
   </div>
 
   <script>
-    const API = "https://najua-auth-app.najuatech.workers.dev";
+    const API = (
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+)
+  ? "http://localhost:8787"
+  : "https://najua-auth-app.najuatech.workers.dev";
 
     const status = document.getElementById("status");
     const signoutButton = document.getElementById("signout");
@@ -588,6 +874,309 @@
 
       return data;
     }
+
+
+    // Member project workspace
+    let editingProjectId = null;
+
+    const projectForm = document.getElementById("project-form");
+    const projectFormStatus = document.getElementById("project-form-status");
+    const projectList = document.getElementById("my-projects-list");
+    const projectListStatus = document.getElementById("my-projects-status");
+    const projectSubmitButton = document.getElementById("project-submit");
+    const projectCancelButton = document.getElementById("project-cancel-edit");
+
+    // Switch between focused member workspace views.
+    const workspaceViews = {
+      overview: [
+        document.getElementById("overview-welcome"),
+        document.getElementById("overview-cards")
+      ],
+      profile: [document.getElementById("profile")],
+      projects: [document.getElementById("projects")],
+      competition: [document.getElementById("competition")]
+    };
+
+    function showWorkspaceView(view) {
+      const selected = Object.prototype.hasOwnProperty.call(workspaceViews, view)
+        ? view
+        : "overview";
+
+      Object.entries(workspaceViews).forEach(([name, elements]) => {
+        elements.forEach(element => {
+          if (element) element.hidden = name !== selected;
+        });
+      });
+
+      document.querySelectorAll("[data-view]").forEach(link => {
+        if (!link.closest(".nav")) return;
+
+        const active = link.dataset.view === selected;
+        link.classList.toggle("active", active);
+
+        if (active) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+    }
+
+    document.querySelectorAll("a[data-view]").forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+
+        const view = link.dataset.view;
+        showWorkspaceView(view);
+
+        if (window.location.hash !== "#" + view) {
+          window.history.replaceState(null, "", "#" + view);
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+
+    const projectCreateButton = document.getElementById("project-create");
+
+    function openProjectForm() {
+      projectForm.hidden = false;
+      projectCreateButton.setAttribute("aria-expanded", "true");
+      projectCreateButton.textContent = "− Close project form";
+      projectForm.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function closeProjectForm() {
+      projectForm.hidden = true;
+      projectCreateButton.setAttribute("aria-expanded", "false");
+      projectCreateButton.textContent = "+ Submit New Project";
+    }
+
+    projectCreateButton.addEventListener("click", () => {
+      if (projectForm.hidden) openProjectForm();
+      else closeProjectForm();
+    });
+
+    function projectElement(tag, className, content) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (content !== undefined) element.textContent = content;
+      return element;
+    }
+
+    function projectTechnologies(value) {
+      if (Array.isArray(value)) return value;
+      if (typeof value !== "string" || !value.trim()) return [];
+
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return value.split(",").map(item => item.trim()).filter(Boolean);
+      }
+    }
+
+    function addProjectLink(container, label, url) {
+      if (!url) return;
+
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== "https:") return;
+
+        const link = projectElement("a", "", label);
+        link.href = parsed.href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.style.marginRight = "12px";
+        container.appendChild(link);
+      } catch (_) {}
+    }
+
+    function renderMemberProjects(projects) {
+      projectList.replaceChildren();
+
+      if (!projects.length) {
+        projectListStatus.textContent =
+          "You haven't submitted any projects yet. Use the form above to share your work.";
+        return;
+      }
+
+      projectListStatus.textContent =
+        projects.length + (projects.length === 1 ? " project submitted." : " projects submitted.");
+
+      projects.forEach(project => {
+        const card = projectElement("article", "my-project-card");
+        const heading = projectElement("h4", "", project.title || "Untitled project");
+        const status = projectElement(
+          "span",
+          "project-status " + (["pending", "approved", "rejected"].includes(project.status) ? project.status : ""),
+          project.status || "unknown"
+        );
+        const summary = projectElement("p", "", project.summary || "");
+        const category = projectElement("p", "", "Category: " + (project.category || "General"));
+
+        card.append(heading, status, summary, category);
+
+        if (project.team_name) {
+          card.appendChild(projectElement("p", "", "Team: " + project.team_name));
+        }
+
+        const technologies = projectTechnologies(project.technologies);
+        if (technologies.length) {
+          card.appendChild(
+            projectElement("p", "", "Technologies: " + technologies.join(", "))
+          );
+        }
+
+        const links = projectElement("p", "project-card-links");
+        addProjectLink(links, "Live demo", project.demo_url);
+        addProjectLink(links, "Repository", project.repository_url);
+        addProjectLink(links, "Project image", project.image_url);
+        if (links.childNodes.length) card.appendChild(links);
+
+        if (project.is_featured) {
+          card.appendChild(projectElement("p", "project-hint", "Featured project"));
+        }
+
+        const actions = projectElement("div", "project-card-actions");
+
+        const editButton = projectElement("button", "button", "Edit project");
+        editButton.type = "button";
+        editButton.addEventListener("click", () => beginProjectEdit(project));
+        actions.appendChild(editButton);
+
+        const deleteButton = projectElement("button", "button", "Delete");
+        deleteButton.type = "button";
+        deleteButton.addEventListener("click", () => deleteMemberProject(project));
+        actions.appendChild(deleteButton);
+
+        card.appendChild(actions);
+        projectList.appendChild(card);
+      });
+    }
+
+    async function loadMemberProjects() {
+      projectListStatus.textContent = "Loading your projects...";
+      try {
+        const data = await apiRequest("/api/projects/mine");
+        renderMemberProjects(Array.isArray(data.projects) ? data.projects : []);
+      } catch (error) {
+        projectList.replaceChildren();
+        projectListStatus.textContent =
+          "Your projects could not be loaded. " + error.message;
+      }
+    }
+
+    function resetProjectForm() {
+      projectForm.reset();
+      editingProjectId = null;
+      document.getElementById("project-form-heading").textContent = "Submit a project";
+      projectSubmitButton.textContent = "Submit project for review";
+      projectCancelButton.hidden = true;
+      projectFormStatus.textContent = "";
+      closeProjectForm();
+    }
+
+    function beginProjectEdit(project) {
+      showWorkspaceView("projects");
+      editingProjectId = project.id;
+      openProjectForm();
+
+      document.getElementById("project-title").value = project.title || "";
+      document.getElementById("project-summary").value = project.summary || "";
+      document.getElementById("project-description").value = project.description || "";
+      document.getElementById("project-category").value = project.category || "General";
+      document.getElementById("project-technologies").value =
+        projectTechnologies(project.technologies).join(", ");
+      document.getElementById("project-team").value = project.team_name || "";
+      document.getElementById("project-image").value = project.image_url || "";
+      document.getElementById("project-demo").value = project.demo_url || "";
+      document.getElementById("project-repository").value = project.repository_url || "";
+      document.getElementById("project-competition").checked = Boolean(project.is_competition);
+
+      document.getElementById("project-form-heading").textContent = "Edit your project";
+      projectSubmitButton.textContent = "Save changes for review";
+      projectCancelButton.hidden = false;
+      projectFormStatus.textContent =
+        "Saving edits will send this project back for review.";
+      projectForm.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function deleteMemberProject(project) {
+      if (!window.confirm('Delete "' + (project.title || "this project") + '"? This cannot be undone.')) {
+        return;
+      }
+
+      projectListStatus.textContent = "Deleting project...";
+      try {
+        await apiRequest("/api/projects/" + encodeURIComponent(project.id), {
+          method: "DELETE"
+        });
+
+        if (editingProjectId === project.id) resetProjectForm();
+        await loadMemberProjects();
+      } catch (error) {
+        projectListStatus.textContent = "Could not delete project: " + error.message;
+      }
+    }
+
+    projectForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      projectSubmitButton.disabled = true;
+      projectSubmitButton.textContent = editingProjectId ? "Saving..." : "Submitting...";
+      projectFormStatus.textContent = "";
+
+      const optionalValue = id => {
+        const value = document.getElementById(id).value.trim();
+        return value || null;
+      };
+
+      const payload = {
+        title: document.getElementById("project-title").value.trim(),
+        summary: document.getElementById("project-summary").value.trim(),
+        description: document.getElementById("project-description").value.trim(),
+        category: document.getElementById("project-category").value,
+        technologies: document.getElementById("project-technologies").value
+          .split(",").map(item => item.trim()).filter(Boolean),
+        team_name: optionalValue("project-team"),
+        image_url: optionalValue("project-image"),
+        demo_url: optionalValue("project-demo"),
+        repository_url: optionalValue("project-repository"),
+        is_competition: document.getElementById("project-competition").checked
+      };
+
+      try {
+        const path = editingProjectId
+          ? "/api/projects/" + encodeURIComponent(editingProjectId)
+          : "/api/projects";
+
+        await apiRequest(path, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        const wasEditing = Boolean(editingProjectId);
+        resetProjectForm();
+        projectFormStatus.textContent = wasEditing
+          ? "Your changes were saved. The project is pending review again."
+          : "Your project was submitted successfully and is awaiting review.";
+
+        await loadMemberProjects();
+      } catch (error) {
+        projectFormStatus.textContent =
+          "Could not save your project: " + error.message;
+      } finally {
+        projectSubmitButton.disabled = false;
+        projectSubmitButton.textContent = editingProjectId
+          ? "Save changes for review"
+          : "Submit project for review";
+      }
+    });
+
+    projectCancelButton.addEventListener("click", resetProjectForm);
+
+    document.getElementById("project-refresh").addEventListener(
+      "click",
+      loadMemberProjects
+    );
 
     async function loadMember() {
       try {
@@ -622,6 +1211,7 @@
         }
 
         await loadProfile();
+        await loadMemberProjects();
       } catch (error) {
         status.textContent =
           "We couldn't verify your session. Please sign in again.";
@@ -755,6 +1345,8 @@
       }
     });
 
+    const requestedView = window.location.hash.slice(1);
+    showWorkspaceView(requestedView || "overview");
     loadMember();
   </script>
 </body>

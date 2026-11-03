@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d1a">
+  <meta name="description" content="Discover projects built by the Najua Tech community.">
+  <title>Projects | Najua Tech</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d1a;
+      --panel: #111c30;
+      --panel2: #17253b;
+      --line: #263b56;
+      --white: #f3f7ff;
+      --muted: #a6b5c9;
+      --cyan: #56f0e0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--white);
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: var(--cyan); }
+
+    .container {
+      width: min(1120px, 90%);
+      margin: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: #0c1425;
+    }
+
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .brand span { color: var(--cyan); }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .nav-links a:hover { color: var(--cyan); }
+
+    .hero {
+      padding: 65px 0 35px;
+      background: radial-gradient(ellipse at 85% 0%, #173451 0%, transparent 55%);
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 8px 0;
+      font-size: clamp(34px, 6vw, 54px);
+      line-height: 1.12;
+    }
+
+    .intro {
+      max-width: 650px;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 230px;
+      gap: 12px;
+      margin: 25px 0;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--panel);
+      color: var(--white);
+      font: inherit;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    .section {
+      padding: 10px 0 65px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-heading h2 { margin: 0; }
+
+    #count {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .project-card {
+      min-width: 0;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .project-card:hover { border-color: var(--cyan); }
+
+    .project-image {
+      display: block;
+      width: 100%;
+      height: 175px;
+      object-fit: cover;
+      background: var(--panel2);
+    }
+
+    .project-content { padding: 19px; }
+
+    .project-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .tag.featured {
+      color: var(--cyan);
+      border-color: #28605e;
+      background: #10302f;
+    }
+
+    .project-card h3 {
+      margin: 5px 0 8px;
+      font-size: 19px;
+      line-height: 1.35;
+    }
+
+    .project-summary {
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .project-author {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 14px;
+    }
+
+    .technologies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 13px;
+    }
+
+    .project-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 17px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .project-links a { text-decoration: none; }
+
+    .message {
+      padding: 35px 18px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    footer {
+      padding: 25px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 850px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 600px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 16px 0;
+      }
+
+      .nav-links { gap: 13px; }
+      .controls { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .hero { padding-top: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="./index.html">NAJUA<span>TECH.</span></a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About</a>
+        <a href="./forum/">Community</a>
+        <a href="./login.html">Sign In</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">Innovation in Action</p>
+        <h1>Projects built by our community.</h1>
+        <p class="intro">
+          Explore ideas, applications, websites and software created by
+          members of the Najua Tech community.
+        </p>
+
+        <div class="controls">
+          <input
+            id="search"
+            type="search"
+            placeholder="Search projects, ideas or technologies..."
+            aria-label="Search projects"
+          >
+          <select id="category" aria-label="Filter by category">
+            <option value="">All categories</option>
+            <option value="Web Development">Web Development</option>
+            <option value="App Development">App Development</option>
+            <option value="Software">Software</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section-heading">
+        <h2>Community projects</h2>
+        <span id="count"></span>
+      </div>
+
+      <div id="message" class="message" role="status" aria-live="polite">
+        Loading projects...
+      </div>
+
+      <div id="projects" class="grid" hidden></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © <span id="year"></span> Najua Tech — Technology. Innovation. Community.
+    </div>
+  </footer>
+
+  <script>
+    const API = (
+      location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1"
+    )
+      ? "http://localhost:8787"
+      : "https://najua-auth-app.najuatech.workers.dev";
+
+    const projectGrid = document.getElementById("projects");
+    const message = document.getElementById("message");
+    const searchInput = document.getElementById("search");
+    const categorySelect = document.getElementById("category");
+    const count = document.getElementById("count");
+
+    let allProjects = [];
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    function makeElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+
+    function safeExternalLink(url, label) {
+      if (typeof url !== "string") return null;
+
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== "https:") return null;
+
+        const link = makeElement("a", "", label);
+        link.href = parsed.href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        return link;
+      } catch {
+        return null;
+      }
+    }
+
+    function parseTechnologies(value) {
+      if (Array.isArray(value)) return value;
+
+      if (typeof value === "string") {
+        try {
+          const parsed = JSON.parse(value);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      return [];
+    }
+
+    function createProjectCard(project) {
+      const card = makeElement("article", "project-card");
+
+      if (typeof project.image_url === "string") {
+        try {
+          const imageUrl = new URL(project.image_url);
+          if (imageUrl.protocol === "https:") {
+            const image = makeElement("img", "project-image");
+            image.src = imageUrl.href;
+            image.alt = "";
+            image.loading = "lazy";
+            image.referrerPolicy = "no-referrer";
+            image.addEventListener("error", () => image.remove());
+            card.appendChild(image);
+          }
+        } catch {}
+      }
+
+      const content = makeElement("div", "project-content");
+      const meta = makeElement("div", "project-meta");
+
+      meta.appendChild(makeElement("span", "tag", project.category || "Project"));
+
+      if (Number(project.is_featured) === 1) {
+        meta.appendChild(makeElement("span", "tag featured", "Featured"));
+      }
+
+      if (Number(project.is_competition) === 1) {
+        meta.appendChild(makeElement("span", "tag", "Competition"));
+      }
+
+      content.appendChild(meta);
+      content.appendChild(makeElement("h3", "", project.title || "Untitled project"));
+      content.appendChild(makeElement("p", "project-summary", project.summary || ""));
+
+      if (project.team_name) {
+        content.appendChild(
+          makeElement("p", "project-author", "Team: " + project.team_name)
+        );
+      }
+
+      if (project.author_name) {
+        content.appendChild(
+          makeElement("p", "project-author", "Created by " + project.author_name)
+        );
+      }
+
+      const technologies = parseTechnologies(project.technologies);
+
+      if (technologies.length) {
+        const technologyList = makeElement("div", "technologies");
+
+        technologies.forEach((technology) => {
+          if (typeof technology === "string") {
+            technologyList.appendChild(makeElement("span", "tag", technology));
+          }
+        });
+
+        content.appendChild(technologyList);
+      }
+
+      const links = makeElement("div", "project-links");
+      const demo = safeExternalLink(project.demo_url, "View project ↗");
+      const repository = safeExternalLink(project.repository_url, "Repository ↗");
+
+      if (demo) links.appendChild(demo);
+      if (repository) links.appendChild(repository);
+
+      if (links.childElementCount) content.appendChild(links);
+
+      card.appendChild(content);
+      return card;
+    }
+
+    function renderProjects() {
+      const term = searchInput.value.trim().toLowerCase();
+      const category = categorySelect.value;
+
+      const filtered = allProjects.filter((project) => {
+        if (category && project.category !== category) return false;
+
+        const searchable = [
+          project.title,
+          project.summary,
+          project.description,
+          project.category,
+          project.author_name,
+          project.team_name,
+          ...parseTechnologies(project.technologies)
+        ].join(" ").toLowerCase();
+
+        return searchable.includes(term);
+      });
+
+      projectGrid.replaceChildren();
+      count.textContent = filtered.length + (
+        filtered.length === 1 ? " project" : " projects"
+      );
+
+      if (!filtered.length) {
+        projectGrid.hidden = true;
+        message.hidden = false;
+        message.textContent = allProjects.length
+          ? "No projects match your search. Try another keyword or category."
+          : "There are no approved projects to display yet. Check back soon.";
+        return;
+      }
+
+      filtered.forEach((project) => {
+        projectGrid.appendChild(createProjectCard(project));
+      });
+
+      message.hidden = true;
+      projectGrid.hidden = false;
+    }
+
+    async function loadProjects() {
+      message.hidden = false;
+      message.textContent = "Loading projects...";
+      projectGrid.hidden = true;
+
+      try {
+        const response = await fetch(API + "/api/projects", {
+          credentials: "omit",
+          headers: { "Accept": "application/json" }
+        });
+
+        if (!response.ok) {
+          throw new Error("The projects directory could not be loaded.");
+        }
+
+        const data = await response.json();
+        allProjects = Array.isArray(data.projects) ? data.projects : [];
+        renderProjects();
+      } catch (error) {
+        message.textContent =
+          error.message || "Unable to load projects. Please try again.";
+        count.textContent = "";
+      }
+    }
+
+    searchInput.addEventListener("input", renderProjects);
+    categorySelect.addEventListener("change", renderProjects);
+
+    loadProjects();
+  </script>
+</body>
+</html>

@@ -614,30 +614,24 @@
       <div class="eyebrow">Innovation in Action</div>
       <h2 class="section-title">Ideas become impact.</h2>
       <p class="intro">
-        This space will showcase participant projects, creative
-        technology solutions, competition highlights, and achievements.
+        Discover ideas, websites, applications and software created
+        by members of the Najua Tech community.
       </p>
-      <div class="grid">
-        <article class="card">
-          <div class="symbol">⌘</div>
-          <h3>Web Experiences</h3>
-          <p>Websites and digital platforms designed to solve real problems.</p>
-        </article>
-        <article class="card">
-          <div class="symbol">▣</div>
-          <h3>Mobile Applications</h3>
-          <p>Application concepts that make everyday tasks easier.</p>
-        </article>
-        <article class="card">
-          <div class="symbol">⌬</div>
-          <h3>Software Solutions</h3>
-          <p>Creative software projects built around useful ideas.</p>
-        </article>
+
+      <div id="homepage-projects-message" class="notice" role="status">
+        Loading community projects...
       </div>
-      <p class="intro" style="margin-top:22px">
-        Participant submissions and project showcases will appear here
-        when the program is ready.
-      </p>
+
+      <div class="grid" id="homepage-projects-grid" hidden></div>
+
+      <div class="actions" style="margin-top:28px; flex-wrap:wrap;">
+        <a class="btn primary" href="projects.html">
+          Explore All Projects ↗
+        </a>
+        <a class="btn secondary" href="dashboard.html#projects">
+          Share Your Project
+        </a>
+      </div>
     </div>
   </section>
 
@@ -735,7 +729,12 @@
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  const API = "https://najua-auth-app.najuatech.workers.dev";
+  const API = (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  )
+    ? "http" + "://" + "localhost:8787"
+    : "https" + "://" + "najua-auth-app.najuatech.workers.dev";
   const signInLink = document.getElementById("signin-link");
   const memberGreeting = document.getElementById("member-greeting");
   const homeSignout = document.getElementById("home-signout");
@@ -795,6 +794,115 @@
       alert("We couldn't sign you out. Please try again.");
     }
   });
+
+
+  const homepageProjectsGrid =
+    document.getElementById("homepage-projects-grid");
+  const homepageProjectsMessage =
+    document.getElementById("homepage-projects-message");
+
+  function homepageProjectElement(tag, className, text) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  }
+
+  async function loadHomepageProjects() {
+    try {
+      const response = await fetch(API + "/api/projects", {
+        credentials: "omit",
+        headers: { "Accept": "application/json" }
+      });
+
+      if (!response.ok) {
+        throw new Error("Projects are temporarily unavailable.");
+      }
+
+      const data = await response.json();
+      const projects = Array.isArray(data.projects)
+        ? data.projects.slice(0, 3)
+        : [];
+
+      homepageProjectsGrid.replaceChildren();
+
+      if (!projects.length) {
+        homepageProjectsMessage.textContent =
+          "Community projects will appear here as submissions are approved.";
+        return;
+      }
+
+      projects.forEach((project) => {
+        const card = homepageProjectElement("article", "card");
+        const category = homepageProjectElement(
+          "span",
+          "tag",
+          project.category || "Project"
+        );
+
+        card.appendChild(category);
+
+        if (Number(project.is_featured) === 1) {
+          card.appendChild(
+            homepageProjectElement("span", "tag", "Featured")
+          );
+        }
+
+        if (Number(project.is_competition) === 1) {
+          card.appendChild(
+            homepageProjectElement("span", "tag", "Competition")
+          );
+        }
+
+        card.appendChild(
+          homepageProjectElement(
+            "h3",
+            "",
+            project.title || "Untitled project"
+          )
+        );
+
+        card.appendChild(
+          homepageProjectElement(
+            "p",
+            "",
+            project.summary || ""
+          )
+        );
+
+        if (project.author_name) {
+          card.appendChild(
+            homepageProjectElement(
+              "p",
+              "",
+              "Created by " + project.author_name
+            )
+          );
+        }
+
+        if (project.team_name) {
+          card.appendChild(
+            homepageProjectElement(
+              "p",
+              "",
+              "Team: " + project.team_name
+            )
+          );
+        }
+
+        homepageProjectsGrid.appendChild(card);
+      });
+
+      homepageProjectsMessage.hidden = true;
+      homepageProjectsGrid.hidden = false;
+
+    } catch (error) {
+      homepageProjectsMessage.textContent =
+        error.message || "Unable to load community projects.";
+    }
+  }
+
+  loadHomepageProjects();
 
   checkHomepageSession();
 </script>

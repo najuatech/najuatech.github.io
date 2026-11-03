@@ -177,7 +177,12 @@
 
   
   <script>
-    const API = "https://najua-auth-app.najuatech.workers.dev";
+    const API = (
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+    )
+      ? "http://localhost:8787"
+      : "https://najua-auth-app.najuatech.workers.dev";
     
     const form = document.getElementById("auth-form");
     const nameField = document.getElementById("name-field");
