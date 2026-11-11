@@ -722,17 +722,10 @@
           showcased here as our partnership network grows.
         </p>
 
-        <div class="grid" style="margin-top:24px;">
-          <article class="card"
-            style="border:1px dashed rgba(50,201,244,.45);">
-            <div class="symbol">＋</div>
-            <h3>Your Organization Could Be Here</h3>
-            <p>
-              Become a Najua Tech partner and join us in
-              supporting Tanzania's future technology talent.
-            </p>
-          </article>
-        </div>
+        <div id="homepage-sponsors-grid" class="grid" style="margin-top:24px;"></div>
+        <p id="homepage-sponsors-message" class="intro" aria-live="polite">
+          Loading our partners...
+        </p>
       </div>
 
       <div class="actions" style="justify-content:center; margin-top:30px;">
@@ -839,6 +832,84 @@
     return element;
   }
 
+  const homepageSponsorsGrid =
+    document.getElementById("homepage-sponsors-grid");
+  const homepageSponsorsMessage =
+    document.getElementById("homepage-sponsors-message");
+
+  async function loadHomepageSponsors() {
+    try {
+      const response = await fetch(API + "/api/sponsors", {
+        credentials: "omit",
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      });
+
+      if (!response.ok) {
+        throw new Error("Sponsors are temporarily unavailable.");
+      }
+
+      const data = await response.json();
+      const sponsors = Array.isArray(data.sponsors) ? data.sponsors : [];
+
+      homepageSponsorsGrid.replaceChildren();
+
+      if (!sponsors.length) {
+        homepageSponsorsMessage.textContent =
+          "Our partners will be showcased here as partnerships are confirmed.";
+        return;
+      }
+
+      sponsors.forEach((sponsor) => {
+        const card = homepageProjectElement("article", "card");
+
+        if (sponsor.logo_url) {
+          const logo = document.createElement("img");
+          logo.src = API + sponsor.logo_url;
+          logo.alt = (sponsor.display_name || "Sponsor") + " logo";
+          logo.loading = "lazy";
+          logo.style.maxWidth = "100%";
+          logo.style.maxHeight = "110px";
+          logo.style.objectFit = "contain";
+          logo.style.marginBottom = "16px";
+          logo.onerror = () => logo.remove();
+          card.appendChild(logo);
+        }
+
+        card.appendChild(
+          homepageProjectElement("h3", "", sponsor.display_name || "Our Partner")
+        );
+
+        if (sponsor.description) {
+          card.appendChild(
+            homepageProjectElement("p", "", sponsor.description)
+          );
+        }
+
+        if (sponsor.website_url) {
+          try {
+            const website = new URL(sponsor.website_url);
+            if (website.protocol === "https:" || website.protocol === "http:") {
+              const link = document.createElement("a");
+              link.href = website.toString();
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              link.textContent = "Visit website";
+              card.appendChild(link);
+            }
+          } catch (_) {}
+        }
+
+        homepageSponsorsGrid.appendChild(card);
+      });
+
+      homepageSponsorsMessage.hidden = true;
+    } catch (_) {
+      homepageSponsorsMessage.textContent =
+        "Our partners are temporarily unavailable. Please try again later.";
+    }
+  }
+
   async function loadHomepageProjects() {
     try {
       const response = await fetch(API + "/api/projects", {
@@ -934,6 +1005,7 @@
   }
 
   loadHomepageProjects();
+  loadHomepageSponsors();
 
   checkHomepageSession();
 </script>
