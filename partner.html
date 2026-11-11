@@ -77,6 +77,14 @@
       .wide { grid-column:auto; }
       main { padding-top:35px; }
     }
+
+.sponsors{margin:0 0 36px}.sponsors h2{font-size:28px;margin:0 0 8px}
+.sponsor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
+.public-sponsor{padding:20px;border:1px solid var(--line);border-radius:14px;background:#101a2d}
+.public-sponsor img{display:block;max-width:100%;max-height:90px;object-fit:contain;margin:0 auto 15px}
+.public-sponsor h3{overflow-wrap:anywhere}.public-sponsor p{overflow-wrap:anywhere}
+.public-sponsor a{color:var(--cyan)}
+
   </style>
   <link rel="canonical" href="https://najuatech.co.tz/partner.html">
 </head>
@@ -96,6 +104,15 @@
       Tell us about your organization and how you would like to work with Najua Tech.
       Our team will review your inquiry.
     </p>
+
+
+    <section class="sponsors" aria-labelledby="sponsors-heading">
+      <h2 id="sponsors-heading">Our Sponsors</h2>
+      <p class="intro">We appreciate the organizations supporting technology, education, and young innovators.</p>
+      <div id="public-sponsors" class="sponsor-grid" aria-live="polite">
+        <p class="hint">Loading sponsors…</p>
+      </div>
+    </section>
 
     <section class="panel">
       <form id="partner-form">
@@ -166,6 +183,68 @@
     const form = document.getElementById("partner-form");
     const button = document.getElementById("submit-button");
     const statusBox = document.getElementById("status");
+
+
+    async function loadPublicSponsors() {
+      const container = document.getElementById("public-sponsors");
+      try {
+        const response = await fetch(API + "/api/sponsors");
+        if (!response.ok) throw new Error("Request failed");
+        const data = await response.json();
+        const items = Array.isArray(data.sponsors) ? data.sponsors : [];
+        container.replaceChildren();
+
+        if (!items.length) {
+          const empty = document.createElement("p");
+          empty.className = "hint";
+          empty.textContent = "Our sponsor community will be featured here soon.";
+          container.appendChild(empty);
+          return;
+        }
+
+        for (const item of items) {
+          const card = document.createElement("article");
+          card.className = "public-sponsor";
+
+          if (item.logo_url) {
+            const image = document.createElement("img");
+            image.src = API + item.logo_url;
+            image.alt = item.display_name + " logo";
+            image.loading = "lazy";
+            card.appendChild(image);
+          }
+
+          const heading = document.createElement("h3");
+          heading.textContent = item.display_name;
+          card.appendChild(heading);
+
+          if (item.description) {
+            const description = document.createElement("p");
+            description.textContent = item.description;
+            card.appendChild(description);
+          }
+
+          if (item.website_url) {
+            try {
+              const url = new URL(item.website_url);
+              if (url.protocol === "https:" || url.protocol === "http:") {
+                const link = document.createElement("a");
+                link.href = url.toString();
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = "Visit website";
+                card.appendChild(link);
+              }
+            } catch (_) {}
+          }
+          container.appendChild(card);
+        }
+      } catch (_) {
+        container.textContent = "Sponsors are temporarily unavailable. Please try again later.";
+      }
+    }
+
+    loadPublicSponsors();
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();

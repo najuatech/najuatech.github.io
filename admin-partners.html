@@ -54,6 +54,16 @@
     .empty { text-align:center; padding:35px 16px; color:var(--muted); border:1px dashed var(--line); border-radius:14px; }
     footer { border-top:1px solid var(--line); padding:22px 0; color:var(--muted); font-size:13px; }
     @media(max-width:600px) { .details { grid-template-columns:1fr; } .card { padding:17px; } }
+
+.sponsor-section{margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
+.sponsor-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.sponsor-form input,.sponsor-form textarea,.sponsor-form select,.sponsor-card input:not([type=checkbox]),.sponsor-card textarea{box-sizing:border-box;width:100%;padding:10px;margin:5px 0 12px;background:#080f1e;color:inherit;border:1px solid var(--line);border-radius:8px;font:inherit}
+.sponsor-form .wide{grid-column:1/-1}.sponsor-form textarea,.sponsor-card textarea{min-height:75px}
+.sponsor-list{display:grid;gap:14px;margin-top:18px}.sponsor-card{padding:16px;border:1px solid var(--line);border-radius:12px;background:#0c1425}
+.sponsor-card label{display:block;font-size:13px;color:var(--muted)}.sponsor-card img{max-width:150px;max-height:75px;object-fit:contain}
+.sponsor-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.sponsor-active{display:flex!important;align-items:center;gap:8px}.sponsor-active input{width:auto!important}
+@media(max-width:600px){.sponsor-form{grid-template-columns:1fr}.sponsor-form .wide{grid-column:auto}}
+
   </style>
   <meta name="robots" content="noindex,follow">
 </head>
@@ -89,6 +99,37 @@
         <span id="count" class="muted"></span>
       </div>
       <div id="list" class="list"></div>
+
+      <div class="sponsor-section">
+        <h2>Sponsor management</h2>
+        <p>Create sponsors from approved applications. New sponsors are hidden until you publish them.</p>
+        <div id="sponsor-status" role="status" aria-live="polite">Loading sponsors…</div>
+        <h3>Create sponsor</h3>
+        <form id="sponsor-create-form" class="sponsor-form">
+          <label class="wide">Approved application
+            <select id="sponsor-inquiry" required><option value="">Choose an approved application</option></select>
+          </label>
+          <label class="wide">Sponsor name
+            <input id="new-sponsor-name" maxlength="160" required>
+          </label>
+          <label class="wide">Description
+            <textarea id="new-sponsor-description" maxlength="2000"></textarea>
+          </label>
+          <label>Website
+            <input id="new-sponsor-website" type="url" placeholder="https://example.com">
+          </label>
+          <label>Display order
+            <input id="new-sponsor-order" type="number" min="0" step="1" value="0">
+          </label>
+          <div class="wide"><button type="submit">Create unpublished sponsor</button></div>
+        </form>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <h3>Existing sponsors</h3>
+          <button id="sponsor-refresh" type="button">Refresh</button>
+        </div>
+        <div id="sponsor-list" class="sponsor-list"></div>
+      </div>
+
     </section>
   </main>
 
@@ -111,13 +152,14 @@
     }
 
     async function apiRequest(path, options = {}) {
+      const headers = new Headers(options.headers || {});
+      if (!(options.body instanceof FormData) && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+      }
       const response = await fetch(API + path, {
         ...options,
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {})
-        }
+        headers
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -281,6 +323,216 @@
     refreshButton.addEventListener("click", loadInquiries);
     filter.addEventListener("change", render);
 
+
+    const sponsorStatus = document.getElementById("sponsor-status");
+    const sponsorList = document.getElementById("sponsor-list");
+    const sponsorInquiry = document.getElementById("sponsor-inquiry");
+    let sponsorRecords = [];
+
+    function setSponsorStatus(message) {
+      sponsorStatus.textContent = message;
+    }
+
+    async function loadSponsors() {
+      setSponsorStatus("Loading sponsors…");
+      try {
+        const data = await apiRequest("/api/admin/sponsors");
+        sponsorRecords = Array.isArray(data.sponsors) ? data.sponsors : [];
+        sponsorInquiry.replaceChildren();
+        const first = document.createElement("option");
+        first.value = "";
+        first.textContent = "Choose an approved application";
+        sponsorInquiry.appendChild(first);
+
+        for (const item of (data.approved_inquiries || [])) {
+          const option = document.createElement("option");
+          option.value = item.id;
+          option.textContent = item.organization_name;
+          sponsorInquiry.appendChild(option);
+        }
+
+        renderSponsors();
+        setSponsorStatus("Loaded " + sponsorRecords.length + " sponsor record(s).");
+      } catch (error) {
+        setSponsorStatus(error.message || "Could not load sponsors.");
+      }
+    }
+
+    function renderSponsors() {
+      sponsorList.replaceChildren();
+      if (!sponsorRecords.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "No sponsors have been created yet.";
+        sponsorList.appendChild(empty);
+        return;
+      }
+
+      for (const item of sponsorRecords) {
+        const card = document.createElement("article");
+        card.className = "sponsor-card";
+
+        const heading = document.createElement("h3");
+        heading.textContent = item.display_name;
+        card.appendChild(heading);
+
+        if (item.logo_key) {
+          const note = document.createElement("p");
+          note.textContent = "A logo is uploaded.";
+          card.appendChild(note);
+        }
+
+        function addField(labelText, value, type) {
+          const label = document.createElement("label");
+          label.textContent = labelText;
+          const input = document.createElement(type === "textarea" ? "textarea" : "input");
+          if (type !== "textarea") input.type = type || "text";
+          input.value = value == null ? "" : String(value);
+          label.appendChild(input);
+          card.appendChild(label);
+          return input;
+        }
+
+        const name = addField("Sponsor name", item.display_name);
+        const description = addField("Description", item.description, "textarea");
+        const website = addField("Website URL", item.website_url, "url");
+        const order = addField("Display order", item.display_order, "number");
+        order.min = "0";
+        order.step = "1";
+
+        const activeLabel = document.createElement("label");
+        activeLabel.className = "sponsor-active";
+        const active = document.createElement("input");
+        active.type = "checkbox";
+        active.checked = item.is_active === 1;
+        activeLabel.append(active, document.createTextNode("Published on public website"));
+        card.appendChild(activeLabel);
+
+        const actions = document.createElement("div");
+        actions.className = "sponsor-actions";
+
+        const save = document.createElement("button");
+        save.type = "button";
+        save.textContent = "Save changes";
+        save.addEventListener("click", async () => {
+          const displayOrder = Number(order.value);
+          if (!Number.isSafeInteger(displayOrder) || displayOrder < 0) {
+            setSponsorStatus("Display order must be a non-negative whole number.");
+            return;
+          }
+          save.disabled = true;
+          try {
+            await apiRequest("/api/admin/sponsors/" + encodeURIComponent(item.id), {
+              method: "PATCH",
+              body: JSON.stringify({
+                display_name: name.value,
+                description: description.value,
+                website_url: website.value || null,
+                display_order: displayOrder,
+                is_active: active.checked
+              })
+            });
+            setSponsorStatus("Sponsor changes saved.");
+            await loadSponsors();
+          } catch (error) {
+            setSponsorStatus(error.message || "Could not save sponsor.");
+          } finally {
+            save.disabled = false;
+          }
+        });
+        actions.appendChild(save);
+
+        const uploadLabel = document.createElement("label");
+        uploadLabel.textContent = item.logo_key ? "Replace logo " : "Upload logo ";
+        const file = document.createElement("input");
+        file.type = "file";
+        file.accept = "image/png,image/jpeg,image/webp";
+        file.addEventListener("change", async () => {
+          const selected = file.files && file.files[0];
+          if (!selected) return;
+          if (selected.size > 2 * 1024 * 1024) {
+            setSponsorStatus("Logo must be no larger than 2 MB.");
+            file.value = "";
+            return;
+          }
+          const body = new FormData();
+          body.append("logo", selected);
+          file.disabled = true;
+          try {
+            await apiRequest("/api/admin/sponsors/" + encodeURIComponent(item.id) + "/logo", {
+              method: "POST",
+              body
+            });
+            setSponsorStatus("Logo uploaded.");
+            await loadSponsors();
+          } catch (error) {
+            setSponsorStatus(error.message || "Logo upload failed.");
+          } finally {
+            file.disabled = false;
+          }
+        });
+        uploadLabel.appendChild(file);
+        actions.appendChild(uploadLabel);
+
+        if (item.logo_key) {
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.textContent = "Remove logo";
+          remove.addEventListener("click", async () => {
+            if (!confirm("Remove this sponsor logo?")) return;
+            try {
+              await apiRequest("/api/admin/sponsors/" + encodeURIComponent(item.id) + "/logo", {
+                method: "DELETE"
+              });
+              setSponsorStatus("Logo removed.");
+              await loadSponsors();
+            } catch (error) {
+              setSponsorStatus(error.message || "Could not remove logo.");
+            }
+          });
+          actions.appendChild(remove);
+        }
+
+        card.appendChild(actions);
+        sponsorList.appendChild(card);
+      }
+    }
+
+    document.getElementById("sponsor-create-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!sponsorInquiry.value) {
+        setSponsorStatus("Select an approved application first.");
+        return;
+      }
+      const button = event.submitter;
+      if (button) button.disabled = true;
+      try {
+        const displayOrder = Number(document.getElementById("new-sponsor-order").value);
+        if (!Number.isSafeInteger(displayOrder) || displayOrder < 0) {
+          throw new Error("Display order must be a non-negative whole number.");
+        }
+        const result = await apiRequest("/api/admin/sponsors", {
+          method: "POST",
+          body: JSON.stringify({
+            inquiry_id: sponsorInquiry.value,
+            display_name: document.getElementById("new-sponsor-name").value,
+            description: document.getElementById("new-sponsor-description").value,
+            website_url: document.getElementById("new-sponsor-website").value || null,
+            display_order: displayOrder
+          })
+        });
+        setSponsorStatus(result.message || "Sponsor created.");
+        event.target.reset();
+        document.getElementById("new-sponsor-order").value = "0";
+        await loadSponsors();
+      } catch (error) {
+        setSponsorStatus(error.message || "Could not create sponsor.");
+      } finally {
+        if (button) button.disabled = false;
+      }
+    });
+
+    document.getElementById("sponsor-refresh").addEventListener("click", loadSponsors);
+
     async function initialize() {
       try {
         const session = await apiRequest("/api/auth/get-session");
@@ -289,6 +541,7 @@
           return;
         }
         await loadInquiries();
+        await loadSponsors();
       } catch (error) {
         if (error.status === 401) {
           window.location.replace("./login.html");
