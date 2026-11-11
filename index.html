@@ -881,9 +881,51 @@
         );
 
         if (sponsor.description) {
-          card.appendChild(
-            homepageProjectElement("p", "", sponsor.description)
+          const description = homepageProjectElement(
+            "p",
+            "",
+            sponsor.description
           );
+          description.style.display = "-webkit-box";
+          description.style.webkitBoxOrient = "vertical";
+          description.style.webkitLineClamp = "2";
+          description.style.overflow = "hidden";
+
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.textContent = "Read more";
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.style.background = "transparent";
+          toggle.style.border = "0";
+          toggle.style.padding = "0";
+          toggle.style.marginTop = "8px";
+          toggle.style.color = "inherit";
+          toggle.style.font = "inherit";
+          toggle.style.fontWeight = "600";
+          toggle.style.textDecoration = "underline";
+          toggle.style.cursor = "pointer";
+
+          toggle.addEventListener("click", () => {
+            const expanded =
+              toggle.getAttribute("aria-expanded") === "true";
+
+            if (expanded) {
+              description.style.display = "-webkit-box";
+              description.style.webkitLineClamp = "2";
+              description.style.overflow = "hidden";
+              toggle.textContent = "Read more";
+              toggle.setAttribute("aria-expanded", "false");
+            } else {
+              description.style.display = "block";
+              description.style.webkitLineClamp = "unset";
+              description.style.overflow = "visible";
+              toggle.textContent = "Read less";
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          });
+
+          card.appendChild(description);
+          card.appendChild(toggle);
         }
 
         if (sponsor.website_url) {
